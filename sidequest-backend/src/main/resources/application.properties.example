@@ -1,0 +1,6 @@
+spring.application.name=sidequest-backend
+
+# Configuração do MongoDB
+spring.data.mongodb.uri=mongodb+srv://nome:senha@NOSSA_URL_AQUI/bancoMongo?retryWrites=true&w=majority&appName=bancoMongo
+spring.data.mongodb.database=nomebanco
+
