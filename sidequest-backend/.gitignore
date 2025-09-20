@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignora o arquivo de configuração sensível do Spring Boot
+sidequest-backend/src/main/resources/application.properties
