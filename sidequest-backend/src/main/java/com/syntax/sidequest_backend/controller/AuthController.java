@@ -1,13 +1,22 @@
 package com.syntax.sidequest_backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.syntax.sidequest_backend.dto.RedefinirSenhaDTO;
+import com.syntax.sidequest_backend.dto.SolicitarResetSenhaDTO;
 import com.syntax.sidequest_backend.modelo.dto.AuthResponseDTO;
 import com.syntax.sidequest_backend.modelo.dto.CadastroUsuarioDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginUsuarioDTO;
 import com.syntax.sidequest_backend.service.UsuarioService;
+
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller responsável pelos endpoints de autenticação
@@ -57,6 +66,34 @@ public class AuthController {
     @GetMapping("/google")
     public ResponseEntity<String> loginGoogle() {
         return ResponseEntity.ok("Redirecionando para /oauth2/authorization/google");
+    }
+
+    /**
+     * Endpoint para solicitar reset de senha
+     * POST /api/auth/solicitar-reset-senha
+     */
+    @PostMapping("/solicitar-reset-senha")
+    public ResponseEntity<String> solicitarResetSenha(@Valid @RequestBody SolicitarResetSenhaDTO dto) {
+        try {
+            usuarioService.solicitarResetSenha(dto.getEmail());
+            return ResponseEntity.ok("Se o email existir, um link de reset será enviado.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint para redefinir senha com token
+     * POST /api/auth/redefinir-senha
+     */
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<String> redefinirSenha(@Valid @RequestBody RedefinirSenhaDTO dto) {
+        try {
+            usuarioService.redefinirSenha(dto.getToken(), dto.getNovaSenha());
+            return ResponseEntity.ok("Senha redefinida com sucesso!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /**

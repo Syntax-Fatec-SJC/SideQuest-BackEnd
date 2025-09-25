@@ -1,10 +1,11 @@
 package com.syntax.sidequest_backend.repositorio;
 
-import com.syntax.sidequest_backend.modelo.entidade.Usuario;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.syntax.sidequest_backend.modelo.entidade.Usuario;
 
 /**
  * Repositório para operações de banco de dados da entidade Usuario
@@ -27,4 +28,9 @@ public interface UsuarioRepositorio extends MongoRepository<Usuario, String> {
      * Verifica se existe usuário com o email especificado
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Busca usuário por token de reset de senha
+     */
+    Optional<Usuario> findByTokenResetSenha(String tokenResetSenha);
 }

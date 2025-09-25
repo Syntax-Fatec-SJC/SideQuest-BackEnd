@@ -1,14 +1,16 @@
 package com.syntax.sidequest_backend.modelo.entidade;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 /**
  * Entidade Usuario - representa um usuário no sistema
@@ -45,6 +47,10 @@ public class Usuario {
 
     // Controle de ativação da conta
     private boolean ativo = true;
+
+    // Campos para reset de senha
+    private String tokenResetSenha;
+    private LocalDateTime dataExpiracaoToken;
 
     // Timestamps
     private LocalDateTime dataCriacao = LocalDateTime.now();

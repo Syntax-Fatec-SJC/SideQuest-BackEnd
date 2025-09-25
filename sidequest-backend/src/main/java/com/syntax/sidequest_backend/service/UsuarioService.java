@@ -3,6 +3,7 @@ package com.syntax.sidequest_backend.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -35,6 +36,9 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Método obrigatório do UserDetailsService
@@ -192,5 +196,61 @@ public class UsuarioService implements UserDetailsService {
             usuario.isAtivo(),
             usuario.getDataCriacao()
         );
+    }
+
+    /**
+     * Inicia processo de reset de senha
+     */
+    public void solicitarResetSenha(String email) {
+        Optional<Usuario> usuarioOpt = usuarioRepositorio.findByEmail(email);
+        
+        if (usuarioOpt.isEmpty()) {
+            // Por segurança, não revelamos se o email existe ou não
+            return;
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        
+        // Verifica se é usuário local (não OAuth2)
+        if (!"local".equals(usuario.getProvedor())) {
+            throw new RuntimeException("Reset de senha não disponível para contas sociais");
+        }
+
+        // Gera token único e define expiração (1 hora)
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiracao = LocalDateTime.now().plusHours(1);
+        
+        // Salva token no usuário
+        usuario.setTokenResetSenha(token);
+        usuario.setDataExpiracaoToken(expiracao);
+        usuarioRepositorio.save(usuario);
+        
+        // Envia email com link de reset
+        emailService.enviarEmailResetSenha(email, token);
+    }
+
+    /**
+     * Redefine senha usando token
+     */
+    public void redefinirSenha(String token, String novaSenha) {
+        // Busca usuário pelo token
+        Usuario usuario = usuarioRepositorio.findByTokenResetSenha(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido ou expirado"));
+
+        // Verifica se token não expirou
+        if (usuario.getDataExpiracaoToken() == null || 
+            LocalDateTime.now().isAfter(usuario.getDataExpiracaoToken())) {
+            throw new RuntimeException("Token expirado");
+        }
+
+        // Atualiza senha
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        
+        // Remove dados de reset
+        usuario.setTokenResetSenha(null);
+        usuario.setDataExpiracaoToken(null);
+        usuario.setDataAtualizacao(LocalDateTime.now());
+        
+        usuarioRepositorio.save(usuario);
     }
 }
