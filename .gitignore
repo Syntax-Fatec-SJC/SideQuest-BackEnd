@@ -19,18 +19,15 @@ target/
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
 ### VS Code ###
 .vscode/
 
 # Ignora o arquivo de configuração sensível do Spring Boot
-sidequest-backend/src/main/resources/application.properties
+src/main/resources/application.properties
+**/application.properties
+
+# Ignora logs
+*.log
+app.log
+backend.log
+frontend.log
