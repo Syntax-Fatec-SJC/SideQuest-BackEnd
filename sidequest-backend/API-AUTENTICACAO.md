@@ -118,7 +118,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9...
 Este endpoint redireciona automaticamente para a página de login do Google. Após a autenticação bem-sucedida, o usuário será redirecionado para:
 
 ```
-http://localhost:3000/auth/callback?token=eyJhbGciOiJIUzUxMiJ9...&user=Nome do Usuário
+http://localhost:5173/auth/callback?token=eyJhbGciOiJIUzUxMiJ9...&user=Nome do Usuário
 ```
 
 ## Testando com cURL

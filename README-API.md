@@ -205,7 +205,7 @@ spring.security.oauth2.client.registration.google.client-secret=SEU_CLIENT_SECRE
    - Mínimo 6 caracteres
 
 3. **CORS:**
-   - Configurado para localhost:3000 e localhost:8080
+   - Configurado para localhost:5173 e localhost:8080
 
 4. **Validações:**
    - Email formato válido

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.syntax.sidequest_backend.dto.RedefinirSenhaDTO;
 import com.syntax.sidequest_backend.dto.SolicitarResetSenhaDTO;
 import com.syntax.sidequest_backend.modelo.dto.AuthResponseDTO;
+import com.syntax.sidequest_backend.modelo.dto.CadastroResponseDTO;
 import com.syntax.sidequest_backend.modelo.dto.CadastroUsuarioDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginUsuarioDTO;
 import com.syntax.sidequest_backend.service.UsuarioService;
@@ -35,9 +36,9 @@ public class AuthController {
      * POST /api/auth/cadastro
      */
     @PostMapping("/cadastro")
-    public ResponseEntity<AuthResponseDTO> cadastrar(@Valid @RequestBody CadastroUsuarioDTO cadastroDTO) {
+    public ResponseEntity<CadastroResponseDTO> cadastrar(@Valid @RequestBody CadastroUsuarioDTO cadastroDTO) {
         try {
-            AuthResponseDTO response = usuarioService.cadastrarUsuario(cadastroDTO);
+            CadastroResponseDTO response = usuarioService.cadastrarUsuario(cadastroDTO);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);

@@ -1,12 +1,16 @@
 package com.syntax.sidequest_backend.controller;
 
-import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
-import com.syntax.sidequest_backend.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
+import com.syntax.sidequest_backend.service.UsuarioService;
 
 /**
  * Controller para demonstrar endpoints protegidos
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 public class UsuarioController {
 
     @Autowired

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.syntax.sidequest_backend.config.security.JwtUtil;
 import com.syntax.sidequest_backend.modelo.dto.AuthResponseDTO;
+import com.syntax.sidequest_backend.modelo.dto.CadastroResponseDTO;
 import com.syntax.sidequest_backend.modelo.dto.CadastroUsuarioDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginUsuarioDTO;
 import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
@@ -57,9 +58,9 @@ public class UsuarioService implements UserDetailsService {
     }
 
     /**
-     * Cadastra um novo usuário no sistema
+     * Cadastra um novo usuário no sistema (sem login automático)
      */
-    public AuthResponseDTO cadastrarUsuario(CadastroUsuarioDTO cadastroDTO) {
+    public CadastroResponseDTO cadastrarUsuario(CadastroUsuarioDTO cadastroDTO) {
         // Verifica se email já existe
         if (usuarioRepositorio.findByEmail(cadastroDTO.getEmail()).isPresent()) {
             throw new RuntimeException("Email já está cadastrado no sistema");
@@ -78,12 +79,9 @@ public class UsuarioService implements UserDetailsService {
         // Salva no banco
         usuario = usuarioRepositorio.save(usuario);
 
-        // Gera token JWT
-        String token = jwtUtil.gerarToken(usuario.getEmail());
-
-        // Retorna resposta com token e dados do usuário
-        return new AuthResponseDTO(token, usuario.getId(), usuario.getNome(),
-                                  usuario.getEmail(), usuario.getFotoPerfil(), usuario.getProvedor());
+        // Retorna apenas mensagem de sucesso (sem token)
+        return new CadastroResponseDTO("Cadastro realizado com sucesso! Faça login para acessar sua conta.", 
+                                      usuario.getEmail());
     }
 
     /**
