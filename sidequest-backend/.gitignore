@@ -34,3 +34,4 @@ build/
 
 # Ignora o arquivo de configuração sensível do Spring Boot
 sidequest-backend/src/main/resources/application.properties
+src/main/resources/application.properties
