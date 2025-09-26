@@ -3,7 +3,7 @@ package com.syntax.sidequest_backend.modelo.dto;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -11,12 +11,12 @@ public class TarefaDTO {
 
     private String id;
 
-    @NotNull
+    @NotBlank(message = "O nome da tarefa é obrigatório")
     private String nome;
 
     private Date prazoFinal;
 
-    @NotNull
+    @NotBlank(message = "O status da tarefa é obrigatório")
     private String status;
 
     private String comentario;

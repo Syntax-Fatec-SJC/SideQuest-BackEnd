@@ -1,14 +1,18 @@
 package com.syntax.sidequest_backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.syntax.sidequest_backend.excecao.AppExcecao;
 import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 import com.syntax.sidequest_backend.repositorio.ProjetoRepositorio;
 
 @Service
 public class ProjetoService {
+
     @Autowired
     private ProjetoRepositorio repositorio;
 
@@ -22,19 +26,29 @@ public class ProjetoService {
         return projeto;
     }
 
+    public List<Projeto> listarProjetos() {
+        return repositorio.findAll();
+    }
+
     public Projeto criarProjeto(ProjetoDTO projetoDto) {
         Projeto projeto = converterProjetoDTO(projetoDto);
-        Projeto projetoSalvo = repositorio.save(projeto);
-        return projetoSalvo;
+        return repositorio.save(projeto);
     }
 
     public Projeto atualizarProjeto(ProjetoDTO projetoDto) {
+        if (projetoDto.getId() == null || !repositorio.existsById(projetoDto.getId())) {
+            throw new AppExcecao("Projeto não encontrado para atualização");
+        }
+
         Projeto projeto = converterProjetoDTO(projetoDto);
-        Projeto projetoAtualizado = repositorio.save(projeto);
-        return projetoAtualizado;
+        return repositorio.save(projeto);
     }
 
-    public void excluirProjeto(ProjetoDTO projetoDto) {
-        repositorio.deleteById(projetoDto.getId());
+    public void excluirProjeto(String id) {
+        if (!repositorio.existsById(id)) {
+            throw new AppExcecao("Projeto não encontrado para exclusão");
+        }
+
+        repositorio.deleteById(id);
     }
 }

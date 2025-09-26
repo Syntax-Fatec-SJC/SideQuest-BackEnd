@@ -1,5 +1,6 @@
 package com.syntax.sidequest_backend.controller;
 
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,11 @@ public class ProjetoController {
     @Autowired
     private ProjetoService service;
 
+    @GetMapping("/listar/projetos")
+    public List<Projeto> listar() {
+        return service.listarProjetos();
+    }
+
     @PostMapping("/cadastrar/projetos")
     public ResponseEntity<Projeto> criar(@RequestBody @Valid ProjetoDTO projetoDto) {
         Projeto projetoCriado = service.criarProjeto(projetoDto);
@@ -34,8 +40,8 @@ public class ProjetoController {
     }
 
     @DeleteMapping("/excluir/projetos/{id}")
-    public void excluir(@PathVariable String id, @RequestBody ProjetoDTO projetoDto) {
-        projetoDto.setId(id); 
-        service.excluirProjeto(projetoDto);
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirProjeto(id);
+        return ResponseEntity.noContent().build();
     }
 }

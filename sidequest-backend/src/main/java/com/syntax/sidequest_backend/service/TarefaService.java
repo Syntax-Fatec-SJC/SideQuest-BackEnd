@@ -1,11 +1,10 @@
 package com.syntax.sidequest_backend.service;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.syntax.sidequest_backend.excecao.AppExcecao;
 import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Tarefa;
 import com.syntax.sidequest_backend.repositorio.TarefaRepositorio;
@@ -17,7 +16,6 @@ public class TarefaService {
 
     @Autowired
     @Setter
-
     private TarefaRepositorio repositorio;
 
     private Tarefa converterTarefaDTO(TarefaDTO tarefaDTO) {
@@ -40,23 +38,29 @@ public class TarefaService {
     }
 
     public Tarefa buscarTarefa(String id) {
-        Optional<Tarefa> tarefaOptional = repositorio.findById(id);
-        return tarefaOptional.orElse(null);
+        return repositorio.findById(id).orElse(null);
     }
 
     public Tarefa criarTarefa(TarefaDTO tarefaDto) {
+        // DTO já valida campos obrigatórios, então só salva
         Tarefa tarefa = converterTarefaDTO(tarefaDto);
-        Tarefa tarefaSalva = repositorio.save(tarefa);
-        return tarefaSalva;
+        return repositorio.save(tarefa);
     }
 
     public Tarefa atualizarTarefa(TarefaDTO tarefaDto) {
+        if (tarefaDto.getId() == null || !repositorio.existsById(tarefaDto.getId())) {
+            throw new AppExcecao("Tarefa não encontrada para atualização");
+        }
+
         Tarefa tarefa = converterTarefaDTO(tarefaDto);
-        Tarefa tarefaAtualizada = repositorio.save(tarefa);
-        return tarefaAtualizada;
+        return repositorio.save(tarefa);
     }
 
     public void excluirTarefa(TarefaDTO tarefaDto) {
+        if (tarefaDto.getId() == null || !repositorio.existsById(tarefaDto.getId())) {
+            throw new AppExcecao("Tarefa não encontrada para exclusão");
+        }
+
         repositorio.deleteById(tarefaDto.getId());
     }
 }
