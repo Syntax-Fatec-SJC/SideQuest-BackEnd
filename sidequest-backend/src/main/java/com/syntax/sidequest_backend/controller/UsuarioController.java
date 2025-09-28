@@ -1,83 +1,52 @@
 package com.syntax.sidequest_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.syntax.sidequest_backend.modelo.dto.LoginDTO;
+import com.syntax.sidequest_backend.modelo.dto.LoginResponseDTO;
 import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
+import com.syntax.sidequest_backend.modelo.entidade.Usuario;
 import com.syntax.sidequest_backend.service.UsuarioService;
 
-/**
- * Controller para demonstrar endpoints protegidos
- * Estes endpoints só podem ser acessados por usuários autenticados
- */
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/api/usuarios")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 public class UsuarioController {
-
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioService service;
 
-    /**
-     * Endpoint protegido - retorna informações do usuário autenticado
-     * GET /api/usuarios/perfil
-     */
-    @GetMapping("/perfil")
-    public ResponseEntity<UsuarioDTO> obterPerfil(@AuthenticationPrincipal UserDetails userDetails) {
-        var usuario = usuarioService.buscarPorEmail(userDetails.getUsername())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        UsuarioDTO usuarioDTO = usuarioService.converterParaDTO(usuario);
-        return ResponseEntity.ok(usuarioDTO);
+    @PostMapping("/cadastrar/usuarios")
+    public ResponseEntity<Usuario> criar(@RequestBody @Valid UsuarioDTO usuarioDTO){
+        Usuario usuarioCriado = service.criarUsuario(usuarioDTO);
+        ResponseEntity<Usuario> resposta = new ResponseEntity<>(usuarioCriado, HttpStatus.CREATED);
+        return resposta;
     }
 
-    /**
-     * Endpoint protegido de exemplo
-     * GET /api/usuarios/dashboard
-     */
-    @GetMapping("/dashboard")
-    public ResponseEntity<?> dashboard(@AuthenticationPrincipal UserDetails userDetails) {
-        var usuario = usuarioService.buscarPorEmail(userDetails.getUsername())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        // Simula dados do dashboard
-        var dashboardData = new DashboardResponse(
-            "Bem-vindo, " + usuario.getNome() + "!",
-            "Este é um endpoint protegido que só usuários autenticados podem acessar.",
-            usuario.getProvedor()
-        );
-
-        return ResponseEntity.ok(dashboardData);
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginDTO loginDTO){
+        LoginResponseDTO response = service.realizarLogin(loginDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * Classe para resposta do dashboard
-     */
-    public static class DashboardResponse {
-        private String mensagem;
-        private String descricao;
-        private String tipoLogin;
+    @PutMapping("/atualizar/usuarios/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable String id, @RequestBody @Valid UsuarioDTO usuarioDTO){
+        usuarioDTO.setId(id);
+        Usuario usuarioAtualizado = service.atualizarUsuario(usuarioDTO);
+        ResponseEntity<Usuario> resposta = new ResponseEntity<>(usuarioAtualizado, HttpStatus.OK);
+        return resposta;
+    }
 
-        public DashboardResponse(String mensagem, String descricao, String tipoLogin) {
-            this.mensagem = mensagem;
-            this.descricao = descricao;
-            this.tipoLogin = tipoLogin;
-        }
+    @DeleteMapping("/excluir/usuarios/{id}")
+    public void excluir(@PathVariable String id, @RequestBody UsuarioDTO usuarioDTO){
+        usuarioDTO.setId(id);
+        service.excluirUsuario(usuarioDTO);
+    }
 
-        // Getters e Setters
-        public String getMensagem() { return mensagem; }
-        public void setMensagem(String mensagem) { this.mensagem = mensagem; }
-
-        public String getDescricao() { return descricao; }
-        public void setDescricao(String descricao) { this.descricao = descricao; }
-
-        public String getTipoLogin() { return tipoLogin; }
-        public void setTipoLogin(String tipoLogin) { this.tipoLogin = tipoLogin; }
+    @GetMapping("/usuarios")
+    public ResponseEntity<java.util.List<Usuario>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 }

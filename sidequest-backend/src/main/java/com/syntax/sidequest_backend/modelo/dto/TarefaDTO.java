@@ -25,7 +25,7 @@ public class TarefaDTO {
 
     private String projetoId;
 
-    private List<String> anexo;
+    private List<String> anexos;
 
-    private List<String> usuariosIds;
+    private List<String> usuarioIds;
 }

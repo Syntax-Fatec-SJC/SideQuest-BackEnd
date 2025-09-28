@@ -1,8 +1,10 @@
 package com.syntax.sidequest_backend.modelo.dto;
 
 import java.util.List;
+
+import com.mongodb.lang.Nullable;
+
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -12,7 +14,6 @@ public class ProjetoDTO {
     private String status;
     @NotNull
     private String nome;
-    @NotEmpty
-    private List<String> usuariosIds;
-    private List<String> tarefasIds;
+    @Nullable
+    private List<String> usuarioIds;
 }
