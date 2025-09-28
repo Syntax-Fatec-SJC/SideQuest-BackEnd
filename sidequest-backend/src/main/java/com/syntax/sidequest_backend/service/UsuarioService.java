@@ -1,5 +1,6 @@
 package com.syntax.sidequest_backend.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +71,9 @@ public class UsuarioService {
             throw new CredenciaisInvalidasException("Email ou senha inválidos");
         }        
         return new LoginResponseDTO(usuario.getId(), usuario.getNome(), usuario.getEmail());
+    }
+
+    public List<Usuario> listarTodos() {
+        return repositorio.findAll();
     }
 }

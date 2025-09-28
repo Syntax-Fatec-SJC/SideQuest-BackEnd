@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.MembroProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 import com.syntax.sidequest_backend.service.ProjetoService;
 
@@ -54,5 +55,23 @@ public class ProjetoController {
     public ResponseEntity<Void> excluir(@PathVariable String id) {
         service.excluirProjetoPorId(id);
         return ResponseEntity.noContent().build(); // 204
+    }
+
+    @GetMapping("/listar/{projetoId}/membros")
+    public ResponseEntity<List<MembroProjetoDTO>> listarMembros(@PathVariable String projetoId) {
+        List<MembroProjetoDTO> membros = service.listarMembros(projetoId);
+        return ResponseEntity.ok(membros);
+    }
+
+    @PostMapping("/adicionar/{projetoId}/membros/{usuarioId}")
+    public ResponseEntity<Void> adicionarMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
+        service.adicionarMembro(projetoId, usuarioId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/excluir/{projetoId}/membros/{usuarioId}")
+    public ResponseEntity<Void> removerMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
+        service.removerMembro(projetoId, usuarioId);
+        return ResponseEntity.noContent().build();
     }
 }

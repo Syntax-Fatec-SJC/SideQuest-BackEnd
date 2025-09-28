@@ -3,12 +3,7 @@ package com.syntax.sidequest_backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.syntax.sidequest_backend.modelo.dto.LoginDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginResponseDTO;
@@ -48,5 +43,10 @@ public class UsuarioController {
     public void excluir(@PathVariable String id, @RequestBody UsuarioDTO usuarioDTO){
         usuarioDTO.setId(id);
         service.excluirUsuario(usuarioDTO);
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<java.util.List<Usuario>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 }
