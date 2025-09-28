@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
@@ -57,9 +58,9 @@ public class TarefaController {
     }
 
     @DeleteMapping("/excluir/tarefas/{id}")
-    public void excluir(@PathVariable String id, @RequestBody TarefaDTO tarefaDto) {
-        tarefaDto.setId(id);
-        service.excluirTarefa(tarefaDto);
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirTarefaPorId(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/projetos/{projetoId}/tarefas")
@@ -67,8 +68,25 @@ public class TarefaController {
         return ResponseEntity.ok(service.listarPorProjeto(projetoId));
     }
 
+    @GetMapping("/listar/{projetoId}/tarefas")
+    public ResponseEntity<List<Tarefa>> listarPorProjetoPadrao(@PathVariable String projetoId) {
+        return ResponseEntity.ok(service.listarPorProjeto(projetoId));
+    }
+
     @GetMapping("/usuarios/{usuarioId}/tarefas")
     public ResponseEntity<List<Tarefa>> listarPorUsuario(@PathVariable String usuarioId) {
         return ResponseEntity.ok(service.listarPorUsuario(usuarioId));
     }
+
+    @PatchMapping("/tarefas/{id}/responsaveis")
+    public ResponseEntity<Tarefa> atualizarResponsaveis(@PathVariable String id, @RequestBody AtualizarResponsaveisDTO dto) {
+        Tarefa t = service.atualizarResponsaveis(id, dto.getUsuarioIds());
+        return ResponseEntity.ok(t);
+    }
+}
+
+class AtualizarResponsaveisDTO {
+    private java.util.List<String> usuarioIds;
+    public java.util.List<String> getUsuarioIds() { return usuarioIds; }
+    public void setUsuarioIds(java.util.List<String> usuarioIds) { this.usuarioIds = usuarioIds; }
 }
