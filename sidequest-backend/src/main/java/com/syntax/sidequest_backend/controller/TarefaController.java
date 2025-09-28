@@ -61,4 +61,14 @@ public class TarefaController {
         tarefaDto.setId(id);
         service.excluirTarefa(tarefaDto);
     }
+
+    @GetMapping("/projetos/{projetoId}/tarefas")
+    public ResponseEntity<List<Tarefa>> listarPorProjeto(@PathVariable String projetoId) {
+        return ResponseEntity.ok(service.listarPorProjeto(projetoId));
+    }
+
+    @GetMapping("/usuarios/{usuarioId}/tarefas")
+    public ResponseEntity<List<Tarefa>> listarPorUsuario(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(service.listarPorUsuario(usuarioId));
+    }
 }

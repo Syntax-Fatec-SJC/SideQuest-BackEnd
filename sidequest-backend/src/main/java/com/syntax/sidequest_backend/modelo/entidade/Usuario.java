@@ -1,7 +1,5 @@
 package com.syntax.sidequest_backend.modelo.entidade;
 
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,6 +13,4 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private List<String> projetosIds;
-    private List<String> tarefasIds;
 }

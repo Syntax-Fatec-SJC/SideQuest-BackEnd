@@ -29,8 +29,8 @@ public class TarefaService {
         tarefa.setComentario(tarefaDTO.getComentario());
         tarefa.setDescricao(tarefaDTO.getDescricao());
         tarefa.setProjetoId(tarefaDTO.getProjetoId());
-        tarefa.setAnexo(tarefaDTO.getAnexo());
-        tarefa.setUsuariosIds(tarefaDTO.getUsuariosIds());
+        tarefa.setAnexos(tarefaDTO.getAnexos());
+        tarefa.setUsuarioIds(tarefaDTO.getUsuarioIds());
 
         return tarefa;
     }
@@ -58,5 +58,20 @@ public class TarefaService {
 
     public void excluirTarefa(TarefaDTO tarefaDto) {
         repositorio.deleteById(tarefaDto.getId());
+    }
+
+    public List<Tarefa> listarPorProjeto(String projetoId) {
+        return repositorio.findByProjetoId(projetoId);
+    }
+
+    public List<Tarefa> listarPorUsuario(String usuarioId) {
+        return repositorio.findByUsuarioIdsContains(usuarioId);
+    }
+
+    public void excluirTarefaPorId(String id) {
+        if (!repositorio.existsById(id)) {
+            throw new RuntimeException("Tarefa não encontrada");
+        }
+        repositorio.deleteById(id);
     }
 }

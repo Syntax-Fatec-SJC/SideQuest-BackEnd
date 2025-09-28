@@ -1,6 +1,8 @@
 package com.syntax.sidequest_backend.controller;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,25 @@ public class ProjetoController {
     private ProjetoService service;
 
     @PostMapping("/cadastrar/projetos")
-    public ResponseEntity<Projeto> criar(@RequestBody @Valid ProjetoDTO projetoDto) {
-        Projeto projetoCriado = service.criarProjeto(projetoDto);
-        ResponseEntity<Projeto> resposta = new ResponseEntity<>(projetoCriado, HttpStatus.OK);
+    public ResponseEntity<Projeto> criar(
+            @RequestParam("usuarioIdCriador") String usuarioIdCriador,
+            @RequestBody @Valid ProjetoDTO projetoDto) {
+
+        Projeto projetoCriado = service.criarProjeto(projetoDto, usuarioIdCriador);
+        return ResponseEntity.status(HttpStatus.CREATED).body(projetoCriado);
+    }
+
+    @GetMapping("/listar/projetos")
+    public ResponseEntity<List<Projeto>> listar(){
+        List<Projeto> projetos = service.listarProjetos();
+        ResponseEntity<List<Projeto>> resposta = new ResponseEntity<>(projetos, HttpStatus.OK);
         return resposta;
+    }
+
+    @GetMapping("/listar/{usuarioId}/projetos")
+    public ResponseEntity<List<Projeto>> listarPorUsuario(@PathVariable String usuarioId){
+        List<Projeto> projetos = service.listarProjetosPorUsuario(usuarioId);
+        return ResponseEntity.ok(projetos);
     }
 
     @PutMapping("/atualizar/projetos/{id}")
@@ -34,8 +51,8 @@ public class ProjetoController {
     }
 
     @DeleteMapping("/excluir/projetos/{id}")
-    public void excluir(@PathVariable String id, @RequestBody ProjetoDTO projetoDto) {
-        projetoDto.setId(id); 
-        service.excluirProjeto(projetoDto);
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        service.excluirProjetoPorId(id);
+        return ResponseEntity.noContent().build(); // 204
     }
 }

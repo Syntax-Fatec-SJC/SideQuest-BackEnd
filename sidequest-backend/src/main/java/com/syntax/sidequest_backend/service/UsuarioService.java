@@ -1,6 +1,5 @@
 package com.syntax.sidequest_backend.service;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +30,7 @@ public class UsuarioService {
         usuario.setEmail(usuarioDTO.getEmail());
         String senhaCriptografada = passwordEncoder.encode(usuarioDTO.getSenha());
         usuario.setSenha(senhaCriptografada);        
-        usuario.setProjetosIds(usuarioDTO.getProjetosIds() != null ? 
-            usuarioDTO.getProjetosIds() : new ArrayList<>());
-        usuario.setTarefasIds(usuarioDTO.getTarefasIds() != null ? 
-            usuarioDTO.getTarefasIds() : new ArrayList<>());        
+   
         return usuario;
     }
 

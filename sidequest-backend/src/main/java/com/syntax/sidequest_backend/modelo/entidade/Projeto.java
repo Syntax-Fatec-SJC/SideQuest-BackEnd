@@ -13,6 +13,5 @@ public class Projeto {
     private String id;
     private String status;
     private String nome;
-    private List<String> usuariosIds;
-    private List<String> tarefasIds;
+    private List<String> usuarioIds;
 }
