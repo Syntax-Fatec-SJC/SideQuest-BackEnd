@@ -3,58 +3,65 @@ package com.syntax.sidequest_backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.dto.MembroProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
-import com.syntax.sidequest_backend.service.ProjetoService;
+import com.syntax.sidequest_backend.service.interfaces.IProjetoService;
 
 import jakarta.validation.Valid;
 
 @RestController
 public class ProjetoController {
 
-    @Autowired
-    private ProjetoService service;
+    private final IProjetoService service;
+    
+    public ProjetoController(IProjetoService service) {
+        this.service = service;
+    }
 
     @PostMapping("/cadastrar/projetos")
     public ResponseEntity<Projeto> criar(
             @RequestParam("usuarioIdCriador") String usuarioIdCriador,
             @RequestBody @Valid ProjetoDTO projetoDto) {
 
-        Projeto projetoCriado = service.criarProjeto(projetoDto, usuarioIdCriador);
+        Projeto projetoCriado = service.criarComCriador(projetoDto, usuarioIdCriador);
         return ResponseEntity.status(HttpStatus.CREATED).body(projetoCriado);
     }
 
     @GetMapping("/listar/projetos")
     public ResponseEntity<List<Projeto>> listar(){
-        List<Projeto> projetos = service.listarProjetos();
-        ResponseEntity<List<Projeto>> resposta = new ResponseEntity<>(projetos, HttpStatus.OK);
-        return resposta;
+        List<Projeto> projetos = service.listarTodos();
+        return ResponseEntity.ok(projetos);
     }
 
     @GetMapping("/listar/{usuarioId}/projetos")
     public ResponseEntity<List<Projeto>> listarPorUsuario(@PathVariable String usuarioId){
-        List<Projeto> projetos = service.listarProjetosPorUsuario(usuarioId);
+        List<Projeto> projetos = service.listarPorUsuario(usuarioId);
         return ResponseEntity.ok(projetos);
     }
 
     @PutMapping("/atualizar/projetos/{id}")
     public ResponseEntity<Projeto> atualizar(@PathVariable String id, @RequestBody @Valid ProjetoDTO projetoDto) {
-        projetoDto.setId(id); 
-        Projeto projetoAtualizado = service.atualizarProjeto(projetoDto);
-        ResponseEntity<Projeto> resposta = new ResponseEntity<>(projetoAtualizado, HttpStatus.OK);
-        return resposta;
+        projetoDto.setId(id);
+        Projeto projetoAtualizado = service.atualizar(projetoDto);
+        return ResponseEntity.ok(projetoAtualizado);
     }
 
     @DeleteMapping("/excluir/projetos/{id}")
     public ResponseEntity<Void> excluir(@PathVariable String id) {
-        service.excluirProjetoPorId(id);
-        return ResponseEntity.noContent().build(); // 204
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/listar/{projetoId}/membros")

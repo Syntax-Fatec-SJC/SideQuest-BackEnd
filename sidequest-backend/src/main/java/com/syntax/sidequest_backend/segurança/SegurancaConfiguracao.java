@@ -31,22 +31,18 @@ public class SegurancaConfiguracao {
 		.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/cadastrar/usuarios", "/login")
-				.permitAll()
 				.requestMatchers(
+					"/cadastrar/usuarios",
+					"/login",
 					"/listar/**",
 					"/cadastrar/projetos",
-					"/atualizar/projetos/**",
-					"/excluir/projetos/**",
-					"/adicionar/*/membros/*",
-					"/excluir/*/membros/*",
-					"/usuarios", 
 					"/cadastrar/tarefas",
-					"/atualizar/tarefas/**",
-					"/excluir/tarefas/**",
-					"/projetos/**/tarefas",
-					"/listar/*/tarefas",
-					"/usuarios/**/tarefas"
+					"/atualizar/**",
+					"/excluir/**",
+					"/usuarios/**", 
+					"/projetos/**",
+					"/tarefas/**",
+					"/adicionar/**"
 				)
 				.permitAll()
 				.anyRequest().authenticated()
@@ -58,7 +54,7 @@ public class SegurancaConfiguracao {
 	@Bean public CorsConfigurationSource corsConfigurationSource(){
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
 		config.setAllowCredentials(true);
 
