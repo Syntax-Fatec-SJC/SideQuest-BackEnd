@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.syntax.sidequest_backend.modelo.dto.LoginDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginResponseDTO;
-import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
+import com.syntax.sidequest_backend.modelo.dto.usuarioDTO.UsuarioDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Usuario;
 import com.syntax.sidequest_backend.service.UsuarioService;
 
@@ -17,13 +17,6 @@ import jakarta.validation.Valid;
 public class UsuarioController {
     @Autowired
     private UsuarioService service;
-
-    @PostMapping("/cadastrar/usuarios")
-    public ResponseEntity<Usuario> criar(@RequestBody @Valid UsuarioDTO usuarioDTO){
-        Usuario usuarioCriado = service.criarUsuario(usuarioDTO);
-        ResponseEntity<Usuario> resposta = new ResponseEntity<>(usuarioCriado, HttpStatus.CREATED);
-        return resposta;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginDTO loginDTO){

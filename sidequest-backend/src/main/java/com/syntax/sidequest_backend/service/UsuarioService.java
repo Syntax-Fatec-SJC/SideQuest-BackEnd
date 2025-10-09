@@ -8,10 +8,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.syntax.sidequest_backend.excecao.personalizado.CredenciaisInvalidasException;
-import com.syntax.sidequest_backend.excecao.personalizado.UsuarioExistenteException;
 import com.syntax.sidequest_backend.modelo.dto.LoginDTO;
 import com.syntax.sidequest_backend.modelo.dto.LoginResponseDTO;
-import com.syntax.sidequest_backend.modelo.dto.UsuarioDTO;
+import com.syntax.sidequest_backend.modelo.dto.usuarioDTO.UsuarioDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Usuario;
 import com.syntax.sidequest_backend.repositorio.UsuarioRepositorio;
 
@@ -33,15 +32,6 @@ public class UsuarioService {
         usuario.setSenha(senhaCriptografada);        
    
         return usuario;
-    }
-
-    public Usuario criarUsuario(UsuarioDTO usuarioDTO){
-        if (repositorio.existsByEmail(usuarioDTO.getEmail())) {
-            throw new UsuarioExistenteException("Email já está em uso");
-        }
-
-        Usuario usuario = converterUsuarioDTO(usuarioDTO);
-        return repositorio.save(usuario);
     }
 
     public Usuario atualizarUsuario(UsuarioDTO usuarioDTO){
