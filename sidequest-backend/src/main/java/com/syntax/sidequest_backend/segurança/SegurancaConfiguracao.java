@@ -37,16 +37,16 @@ public class SegurancaConfiguracao {
 					"/listar/**",
 					"/cadastrar/projetos",
 					"/atualizar/projetos/**",
-					"/excluir/projetos/**",
-					"/adicionar/*/membros/*",
-					"/excluir/*/membros/*",
-					"/usuarios", 
-					"/cadastrar/tarefas",
-					"/atualizar/tarefas/**",
-					"/excluir/tarefas/**",
-					"/projetos/**/tarefas",
-					"/listar/*/tarefas",
-					"/usuarios/**/tarefas"
+				"/excluir/projetos/**",
+				"/adicionar/*/membros/*",
+				"/excluir/*/membros/*",
+				"/usuarios", 
+				"/cadastrar/tarefas",
+				"/atualizar/tarefas/**",
+				"/excluir/tarefas/**",
+				"/projetos/*/tarefas",
+				"/listar/*/tarefas",
+				"/usuarios/*/tarefas"
 				)
 				.permitAll()
 				.anyRequest().authenticated()
