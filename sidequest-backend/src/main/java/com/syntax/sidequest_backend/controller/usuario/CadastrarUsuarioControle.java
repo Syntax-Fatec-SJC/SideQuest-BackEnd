@@ -15,16 +15,15 @@ import com.syntax.sidequest_backend.service.usuario.CadastrarUsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
-public class CadastrarrUsuarioControle {
+public class CadastrarUsuarioControle {
     @Autowired 
     private CadastrarUsuarioService servicoCadastrarUsuario;
 
     @PostMapping("/cadastrar/usuarios")
-    public ResponseEntity<Usuario> cadastro(@Valid @RequestBody CadastrarUsuarioDTO dto){
+    public ResponseEntity<?> cadastro(@Valid @RequestBody CadastrarUsuarioDTO dto){
         Usuario usuario = ConversorUsuarioDTO.converter(dto);
         servicoCadastrarUsuario.cadastraUsuario(usuario);
-        ResponseEntity<Usuario> resposta = new ResponseEntity<>(usuario, HttpStatus.CREATED);
 
-        return resposta;
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
