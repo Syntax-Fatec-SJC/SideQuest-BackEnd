@@ -2,6 +2,8 @@ package com.syntax.sidequest_backend.modelo.conversor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,17 @@ public class ConversorTarefaDTO {
 		dto.setAnexos(copiarLista(tarefa.getAnexos()));
 		dto.setUsuarioIds(copiarLista(tarefa.getUsuarioIds()));
 		return dto;
+	}
+
+	public List<TarefaDTO> paraDTO(List<Tarefa> tarefas) {
+		if (tarefas == null || tarefas.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		return tarefas.stream()
+				.filter(Objects::nonNull)
+				.map(this::paraDTO)
+				.collect(Collectors.toList());
 	}
 
 	private List<String> copiarLista(List<String> origem) {
