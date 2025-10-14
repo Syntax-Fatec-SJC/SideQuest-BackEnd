@@ -45,9 +45,9 @@ public class SegurancaConfiguracao {
 					"/cadastrar/tarefas",
 					"/atualizar/tarefas/**",
 					"/excluir/tarefas/**",
-					"/projetos/**/tarefas",
+					"/projetos/*/tarefas",
 					"/listar/*/tarefas",
-					"/usuarios/**/tarefas"
+					"/usuarios/*/tarefas"
 				)
 				.permitAll()
 				.anyRequest().authenticated()
