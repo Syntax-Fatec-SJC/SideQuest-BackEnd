@@ -31,7 +31,7 @@ public class SegurancaConfiguracao {
 		.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/cadastrar/usuarios", "/login")
+				.requestMatchers("/**")
 				.permitAll()
 				.requestMatchers(
 					"/listar/**",
