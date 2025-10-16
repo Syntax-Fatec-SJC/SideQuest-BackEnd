@@ -16,54 +16,55 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-public class SegurancaConfiguracao {
+public class SecurityConfig {
+
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public SecurityFilterChain rotasPublicas(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/cadastrar/usuarios", "/login")
+                .permitAll()
+                .requestMatchers(
+                        "/listar/**",
+                        "/cadastrar/projetos",
+                        "/atualizar/projetos/**",
+                        "/excluir/projetos/**",
+                        "/adicionar/*/membros/*",
+                        "/excluir/*/membros/*",
+                        "/usuarios",
+                        "/cadastrar/tarefas",
+                        "/atualizar/tarefas/**",
+                        "/excluir/tarefas/**",
+                        "/projetos/**/tarefas",
+                        "/listar/*/tarefas",
+                        "/usuarios/**/tarefas"
+                )
+                .permitAll()
+                .anyRequest().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
 
     @Bean
-	public SecurityFilterChain rotasPublicas(HttpSecurity http) throws Exception {
-		http
-		.cors(Customizer.withDefaults())
-		.csrf(csrf -> csrf.disable())
-		.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/cadastrar/usuarios", "/login")
-				.permitAll()
-				.requestMatchers(
-					"/listar/**",
-					"/cadastrar/projetos",
-					"/atualizar/projetos/**",
-					"/excluir/projetos/**",
-					"/adicionar/*/membros/*",
-					"/excluir/*/membros/*",
-					"/usuarios", 
-					"/cadastrar/tarefas",
-					"/atualizar/tarefas/**",
-					"/excluir/tarefas/**",
-					"/projetos/**/tarefas",
-					"/listar/*/tarefas",
-					"/usuarios/**/tarefas"
-				)
-				.permitAll()
-				.anyRequest().authenticated()
-		)
-		.httpBasic(Customizer.withDefaults());
-		return http.build();
-	}
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        config.setAllowCredentials(true);
 
-	@Bean public CorsConfigurationSource corsConfigurationSource(){
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
-		config.setAllowCredentials(true);
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
