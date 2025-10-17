@@ -39,7 +39,10 @@ public class SegurancaConfiguracao {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/cadastrar/usuarios", "/login")
+                .requestMatchers("/cadastrar/usuarios", "/login",                            
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html")
                 .permitAll()
                 .anyRequest().authenticated()
                 )
