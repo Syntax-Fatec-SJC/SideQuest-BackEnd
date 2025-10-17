@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.syntax.sidequest_backend.modelo.conversor.ConversorUsuario;
 import com.syntax.sidequest_backend.modelo.dto.usuarioDTO.LoginDTO;
-import com.syntax.sidequest_backend.modelo.dto.usuarioDTO.UsuarioDTO;
+import com.syntax.sidequest_backend.modelo.dto.usuarioDTO.LoginResponseDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Usuario;
+import com.syntax.sidequest_backend.seguranca.JwtUtil;
 import com.syntax.sidequest_backend.service.usuario.LoginUsuarioService;
 
 import jakarta.validation.Valid;
@@ -20,10 +21,13 @@ public class LoginUsuarioControle {
     @Autowired
     private LoginUsuarioService servicoLoginUsuarioService;
 
+    @Autowired JwtUtil jwtUtil;
+
     @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> login(@Valid @RequestBody LoginDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO dto) {
         Usuario usuario = servicoLoginUsuarioService.realizarLogin(dto);
-        UsuarioDTO resposta = ConversorUsuario.converter(usuario);
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId());
+        LoginResponseDTO resposta = ConversorUsuario.converterLogin(usuario, token);
 
         return ResponseEntity.ok(resposta);
     }
