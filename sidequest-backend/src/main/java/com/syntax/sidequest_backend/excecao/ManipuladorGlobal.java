@@ -2,6 +2,7 @@ package com.syntax.sidequest_backend.excecao;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.syntax.sidequest_backend.excecao.personalizado.CredenciaisInvalidasException;
 import com.syntax.sidequest_backend.excecao.personalizado.UsuarioExistenteException;
+import com.syntax.sidequest_backend.modelo.dto.RespostaDTO.ErroRespostaDTO;
 
 @ControllerAdvice
 public class ManipuladorGlobal {
@@ -40,4 +42,11 @@ public class ManipuladorGlobal {
         error.put("erro", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED); //401 (credenciais inválidas)
     }
+
+    @ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<ErroRespostaDTO> buscarEntidades(NoSuchElementException ex) {
+		ErroRespostaDTO erroResposta = new ErroRespostaDTO("Falha no processamento dos dados ou elemento não encontrado na base de dados", ex.getMessage());
+		ResponseEntity<ErroRespostaDTO> resposta = new ResponseEntity<>(erroResposta, HttpStatus.BAD_REQUEST);
+		return resposta;
+	}
 }

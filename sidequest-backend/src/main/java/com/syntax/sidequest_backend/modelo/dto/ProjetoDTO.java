@@ -1,5 +1,6 @@
 package com.syntax.sidequest_backend.modelo.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import com.mongodb.lang.Nullable;
@@ -14,6 +15,10 @@ public class ProjetoDTO {
     private String status;
     @NotNull
     private String nome;
+    @Nullable
+    private String descricao;
+    @Nullable
+    private Date prazoFinal;
     @Nullable
     private List<String> usuarioIds;
 }
