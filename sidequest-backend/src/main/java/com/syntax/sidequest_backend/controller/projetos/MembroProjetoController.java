@@ -19,24 +19,24 @@ import com.syntax.sidequest_backend.service.projetos.MembroProjetoService;
 @RestController("membroProjetoController")
 public class MembroProjetoController {
 
-	@Autowired
-	private MembroProjetoService membroProjetoService;
+    @Autowired
+    private MembroProjetoService membroProjetoService;
 
-	@GetMapping("/listar/{projetoId}/membros")
-	public ResponseEntity<List<MembroProjetoDTO>> listarMembros(@PathVariable String projetoId) {
-		List<MembroProjetoDTO> membros = membroProjetoService.listarMembros(projetoId);
-		return ResponseEntity.ok(membros);
-	}
+    @GetMapping("/listar/{projetoId}/membros")
+    public ResponseEntity<List<MembroProjetoDTO>> listarMembros(@PathVariable String projetoId) {
+        List<MembroProjetoDTO> membros = membroProjetoService.listarMembros(projetoId);
+        return ResponseEntity.ok(membros);
+    }
 
-	@PostMapping("/adicionar/{projetoId}/membros/{usuarioId}")
-	public ResponseEntity<Void> adicionarMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
-		membroProjetoService.adicionarMembro(projetoId, usuarioId);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
-	}
+    @PostMapping("/adicionar/{projetoId}/membros/{usuarioId}")
+    public ResponseEntity<Void> adicionarMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
+        membroProjetoService.adicionarMembro(projetoId, usuarioId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
-	@DeleteMapping("/excluir/{projetoId}/membros/{usuarioId}")
-	public ResponseEntity<Void> removerMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
-		membroProjetoService.removerMembro(projetoId, usuarioId);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/excluir/{projetoId}/membros/{usuarioId}")
+    public ResponseEntity<Void> removerMembro(@PathVariable String projetoId, @PathVariable String usuarioId) {
+        membroProjetoService.removerMembro(projetoId, usuarioId);
+        return ResponseEntity.noContent().build();
+    }
 }

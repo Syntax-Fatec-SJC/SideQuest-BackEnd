@@ -13,12 +13,12 @@ import com.syntax.sidequest_backend.service.projetos.DeletarProjetoService;
 @RestController("deletarProjetoController")
 public class DeletarProjetoController {
 
-	@Autowired
-	private DeletarProjetoService deletarProjetoService;
+    @Autowired
+    private DeletarProjetoService deletarProjetoService;
 
-	@DeleteMapping("/excluir/projetos/{id}")
-	public ResponseEntity<Void> excluir(@PathVariable String id) {
-		deletarProjetoService.executar(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/excluir/projetos/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable String id) {
+        deletarProjetoService.executar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

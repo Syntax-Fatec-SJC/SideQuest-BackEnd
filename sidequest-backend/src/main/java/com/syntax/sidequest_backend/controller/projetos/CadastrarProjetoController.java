@@ -18,13 +18,13 @@ import jakarta.validation.Valid;
 @RestController("cadastrarProjetoController")
 public class CadastrarProjetoController {
 
-	@Autowired
-	private CadastrarProjetoService cadastrarProjetoService;
+    @Autowired
+    private CadastrarProjetoService cadastrarProjetoService;
 
-	@PostMapping("/cadastrar/projetos")
-	public ResponseEntity<ProjetoDTO> cadastrar(@RequestParam("usuarioIdCriador") String usuarioIdCriador,
-			@Valid @RequestBody ProjetoDTO dto) {
-		ProjetoDTO criado = cadastrarProjetoService.executar(dto, usuarioIdCriador);
-		return ResponseEntity.status(HttpStatus.CREATED).body(criado);
-	}
+    @PostMapping("/cadastrar/projetos")
+    public ResponseEntity<ProjetoDTO> cadastrar(@RequestParam("usuarioIdCriador") String usuarioIdCriador,
+            @Valid @RequestBody ProjetoDTO dto) {
+        ProjetoDTO criado = cadastrarProjetoService.executar(dto, usuarioIdCriador);
+        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+    }
 }

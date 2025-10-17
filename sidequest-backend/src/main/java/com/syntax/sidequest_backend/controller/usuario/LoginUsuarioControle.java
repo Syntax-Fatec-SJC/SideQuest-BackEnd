@@ -16,11 +16,12 @@ import jakarta.validation.Valid;
 
 @RestController
 public class LoginUsuarioControle {
+
     @Autowired
     private LoginUsuarioService servicoLoginUsuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> login(@Valid @RequestBody LoginDTO dto){
+    public ResponseEntity<UsuarioDTO> login(@Valid @RequestBody LoginDTO dto) {
         Usuario usuario = servicoLoginUsuarioService.realizarLogin(dto);
         UsuarioDTO resposta = ConversorUsuario.converter(usuario);
 

@@ -20,77 +20,74 @@ import com.syntax.sidequest_backend.repositorio.UsuarioRepositorio;
 @Service
 public class MembroProjetoService {
 
-	@Autowired
-	private ProjetoRepositorio projetoRepositorio;
+    @Autowired
+    private ProjetoRepositorio projetoRepositorio;
 
-	@Autowired
-	private UsuarioRepositorio usuarioRepositorio;
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
-	public List<MembroProjetoDTO> listarMembros(String projetoId) {
-		Projeto projeto = projetoRepositorio.findById(projetoId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
+    public List<MembroProjetoDTO> listarMembros(String projetoId) {
+        Projeto projeto = projetoRepositorio.findById(projetoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
 
-		if (projeto.getUsuarioIds() == null || projeto.getUsuarioIds().isEmpty()) {
-			return List.of();
-		}
+        if (projeto.getUsuarioIds() == null || projeto.getUsuarioIds().isEmpty()) {
+            return List.of();
+        }
 
-		String criadorId = projeto.getUsuarioIds().get(0);
+        String criadorId = projeto.getUsuarioIds().get(0);
 
-		List<MembroProjetoDTO> membros = projeto.getUsuarioIds().stream()
-				.map(usuarioId -> {
-					Optional<Usuario> opt = usuarioRepositorio.findById(usuarioId);
-					if (opt.isEmpty())
-						return null;
-					Usuario u = opt.get();
-					return new MembroProjetoDTO(u.getId(), u.getNome(), u.getEmail(), u.getId().equals(criadorId));
-				})
-				.filter(m -> m != null)
-				.sorted(Comparator.comparing(MembroProjetoDTO::criador).reversed()
-						.thenComparing(MembroProjetoDTO::nome, String.CASE_INSENSITIVE_ORDER))
-				.collect(Collectors.toList());
+        return projeto.getUsuarioIds().stream()
+                .map(usuarioId -> {
+                    Optional<Usuario> opt = usuarioRepositorio.findById(usuarioId);
+                    if (opt.isEmpty()) {
+                        return null;
+                    }
+                    Usuario u = opt.get();
+                    return new MembroProjetoDTO(u.getId(), u.getNome(), u.getEmail(), u.getId().equals(criadorId));
+                })
+                .filter(m -> m != null)
+                .sorted(Comparator.comparing(MembroProjetoDTO::criador).reversed()
+                        .thenComparing(MembroProjetoDTO::nome, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
+    }
 
-		return membros;
-	}
+    public void adicionarMembro(String projetoId, String usuarioId) {
+        Projeto projeto = projetoRepositorio.findById(projetoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
 
-	public void adicionarMembro(String projetoId, String usuarioId) {
-		Projeto projeto = projetoRepositorio.findById(projetoId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
+        if (!usuarioRepositorio.existsById(usuarioId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+        }
 
-		if (!usuarioRepositorio.existsById(usuarioId)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
-		}
+        List<String> usuarios = projeto.getUsuarioIds();
+        if (usuarios == null) {
+            usuarios = new ArrayList<>();
+            projeto.setUsuarioIds(usuarios);
+        }
 
-		List<String> usuarios = projeto.getUsuarioIds();
-		if (usuarios == null) {
-			usuarios = new ArrayList<>();
-			projeto.setUsuarioIds(usuarios);
-		}
+        if (!usuarios.contains(usuarioId)) {
+            usuarios.add(usuarioId);
+            projetoRepositorio.save(projeto);
+        }
+    }
 
-		if (usuarios.contains(usuarioId)) {
-			return;
-		}
+    public void removerMembro(String projetoId, String usuarioId) {
+        Projeto projeto = projetoRepositorio.findById(projetoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
 
-		usuarios.add(usuarioId);
-		projetoRepositorio.save(projeto);
-	}
+        List<String> usuarios = projeto.getUsuarioIds();
+        if (usuarios == null || usuarios.isEmpty()) {
+            return;
+        }
 
-	public void removerMembro(String projetoId, String usuarioId) {
-		Projeto projeto = projetoRepositorio.findById(projetoId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
+        if (!usuarios.isEmpty() && usuarios.get(0).equals(usuarioId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Não é possível remover o criador do projeto");
+        }
 
-		List<String> usuarios = projeto.getUsuarioIds();
-		if (usuarios == null || usuarios.isEmpty()) {
-			return;
-		}
-
-		if (!usuarios.isEmpty() && usuarios.get(0).equals(usuarioId)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Não é possível remover o criador do projeto");
-		}
-
-		boolean removed = usuarios.remove(usuarioId);
-		if (removed) {
-			projetoRepositorio.save(projeto);
-		}
-	}
+        boolean removed = usuarios.remove(usuarioId);
+        if (removed) {
+            projetoRepositorio.save(projeto);
+        }
+    }
 }

@@ -17,12 +17,12 @@ import jakarta.validation.Valid;
 @RestController("atualizarProjetoController")
 public class AtualizarProjetoController {
 
-	@Autowired
-	private AtualizarProjetoService atualizarProjetoService;
+    @Autowired
+    private AtualizarProjetoService atualizarProjetoService;
 
-	@PutMapping("/atualizar/projetos/{id}")
-	public ResponseEntity<ProjetoDTO> atualizar(@PathVariable String id, @Valid @RequestBody ProjetoDTO dto) {
-		ProjetoDTO atualizado = atualizarProjetoService.executar(id, dto);
-		return ResponseEntity.ok(atualizado);
-	}
+    @PutMapping("/atualizar/projetos/{id}")
+    public ResponseEntity<ProjetoDTO> atualizar(@PathVariable String id, @Valid @RequestBody ProjetoDTO dto) {
+        ProjetoDTO atualizado = atualizarProjetoService.executar(id, dto);
+        return ResponseEntity.ok(atualizado);
+    }
 }

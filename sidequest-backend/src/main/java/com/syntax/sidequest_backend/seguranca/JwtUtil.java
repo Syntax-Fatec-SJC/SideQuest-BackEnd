@@ -1,4 +1,4 @@
-package com.syntax.sidequest_backend.segurança;
+package com.syntax.sidequest_backend.seguranca;
 
 import java.security.Key;
 import java.util.Date;
