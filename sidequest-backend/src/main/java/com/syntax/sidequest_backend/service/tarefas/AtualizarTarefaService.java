@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.syntax.sidequest_backend.modelo.conversor.ConversorTarefa;
 import com.syntax.sidequest_backend.modelo.conversor.ConversorTarefaDTO;
 import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
@@ -26,9 +27,6 @@ public class AtualizarTarefaService {
 	@Autowired
 	private ProjetoRepositorio projetoRepositorio;
 
-	@Autowired
-	private ConversorTarefaDTO conversor;
-
 	public TarefaDTO executar(String id, TarefaDTO dto) {
 		Tarefa existente = tarefaRepositorio.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
@@ -44,13 +42,13 @@ public class AtualizarTarefaService {
 		List<String> usuarioIds = normalizarLista(dto.getUsuarioIds());
 		validarUsuariosDoProjeto(usuarioIds, projeto);
 
-		Tarefa atualizado = conversor.paraEntidade(dto);
+		Tarefa atualizado = new ConversorTarefaDTO().converter(dto);
 		atualizado.setId(id);
 		atualizado.setProjetoId(projetoId);
 		atualizado.setUsuarioIds(usuarioIds);
 
 		Tarefa salvo = tarefaRepositorio.save(atualizado);
-		return conversor.paraDTO(salvo);
+		return ConversorTarefa.converter(salvo);
 	}
 
 	public TarefaDTO atualizarResponsaveis(String tarefaId, List<String> usuarioIds) {
@@ -65,7 +63,7 @@ public class AtualizarTarefaService {
 
 		tarefa.setUsuarioIds(normalizados);
 		Tarefa salvo = tarefaRepositorio.save(tarefa);
-		return conversor.paraDTO(salvo);
+		return ConversorTarefa.converter(salvo);
 	}
 
 	private List<String> normalizarLista(List<String> origem) {

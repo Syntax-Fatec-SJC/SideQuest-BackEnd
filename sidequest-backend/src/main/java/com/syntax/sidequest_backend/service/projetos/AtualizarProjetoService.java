@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.syntax.sidequest_backend.modelo.conversor.ConversorProjeto;
 import com.syntax.sidequest_backend.modelo.conversor.ConversorProjetoDTO;
 import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
@@ -20,14 +21,11 @@ public class AtualizarProjetoService {
 	@Autowired
 	private ProjetoRepositorio projetoRepositorio;
 
-	@Autowired
-	private ConversorProjetoDTO conversor;
-
 	public ProjetoDTO executar(String id, ProjetoDTO dto) {
 		Projeto existente = projetoRepositorio.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
 
-		Projeto atualizado = conversor.paraEntidade(dto);
+		Projeto atualizado = new ConversorProjetoDTO().paraEntidade(dto);
 		atualizado.setId(id);
 
 		List<String> usuarios = dto.getUsuarioIds() != null
@@ -49,7 +47,7 @@ public class AtualizarProjetoService {
 		atualizado.setUsuarioIds(usuarios);
 
 		Projeto salvo = projetoRepositorio.save(atualizado);
-		return conversor.paraDTO(salvo);
+		return ConversorProjeto.paraDTO(salvo);
 	}
 
 	private List<String> copiarLista(List<String> origem) {

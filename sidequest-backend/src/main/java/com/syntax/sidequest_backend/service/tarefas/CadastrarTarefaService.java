@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.syntax.sidequest_backend.modelo.conversor.ConversorTarefa;
 import com.syntax.sidequest_backend.modelo.conversor.ConversorTarefaDTO;
 import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
@@ -24,9 +25,6 @@ public class CadastrarTarefaService {
 	@Autowired
 	private ProjetoRepositorio projetoRepositorio;
 
-	@Autowired
-	private ConversorTarefaDTO conversor;
-
 	public TarefaDTO executar(TarefaDTO dto) {
 		if (dto.getProjetoId() == null || dto.getProjetoId().isBlank()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ProjetoId é obrigatório");
@@ -38,11 +36,11 @@ public class CadastrarTarefaService {
 		List<String> usuarioIds = normalizarLista(dto.getUsuarioIds());
 		validarUsuariosDoProjeto(usuarioIds, projeto);
 
-		Tarefa tarefa = conversor.paraEntidade(dto);
+		Tarefa tarefa = new ConversorTarefaDTO().converter(dto);
 		tarefa.setUsuarioIds(usuarioIds);
 
 		Tarefa salva = tarefaRepositorio.save(tarefa);
-		return conversor.paraDTO(salva);
+		return ConversorTarefa.converter(salva);
 	}
 
 	private List<String> normalizarLista(List<String> origem) {

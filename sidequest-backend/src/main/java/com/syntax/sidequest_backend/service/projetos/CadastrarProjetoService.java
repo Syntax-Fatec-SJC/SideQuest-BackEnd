@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.syntax.sidequest_backend.modelo.conversor.ConversorProjeto;
 import com.syntax.sidequest_backend.modelo.conversor.ConversorProjetoDTO;
 import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
@@ -19,20 +20,17 @@ public class CadastrarProjetoService {
 	@Autowired
 	private ProjetoRepositorio projetoRepositorio;
 
-	@Autowired
-	private ConversorProjetoDTO conversor;
-
 	public ProjetoDTO executar(ProjetoDTO dto, String usuarioIdCriador) {
 		if (usuarioIdCriador == null || usuarioIdCriador.isBlank()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "usuarioIdCriador é obrigatório");
 		}
 
-		Projeto projeto = conversor.paraEntidade(dto);
+		Projeto projeto = new ConversorProjetoDTO().paraEntidade(dto);
 		List<String> usuarios = montarListaDeUsuarios(dto.getUsuarioIds(), usuarioIdCriador);
 		projeto.setUsuarioIds(usuarios);
 
 		Projeto salvo = projetoRepositorio.save(projeto);
-		return conversor.paraDTO(salvo);
+		return ConversorProjeto.paraDTO(salvo);
 	}
 
 	private List<String> montarListaDeUsuarios(List<String> origem, String usuarioIdCriador) {
