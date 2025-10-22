@@ -37,15 +37,20 @@ public class SegurancaConfiguracao {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/cadastrar/usuarios", "/login",                            
+                .requestMatchers(
+                    "/cadastrar/usuarios", 
+                    "/login",
+                    "/logout",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html")
+                    "/swagger-ui.html",
+                    "/usuarios/*/proximas-entregas"
+                )
                 .permitAll()
                 .anyRequest().authenticated()
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
@@ -55,7 +60,7 @@ public class SegurancaConfiguracao {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization", "X-Requested-With"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
