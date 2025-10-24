@@ -99,8 +99,10 @@ public class TarefaService {
     }
 
     private void validarUsuariosDoProjeto(List<String> usuarioIds, String projetoId) {
-        if (usuarioIds == null || usuarioIds.isEmpty()) return; // lista vazia é sempre válida
-        var projetoOpt = projetoRepositorio.findById(projetoId);
+        if (usuarioIds == null || usuarioIds.isEmpty()) {
+            return; // lista vazia é sempre válida
+
+                }var projetoOpt = projetoRepositorio.findById(projetoId);
         if (projetoOpt.isEmpty()) {
             throw new RuntimeException("Projeto não encontrado para validar usuários");
         }

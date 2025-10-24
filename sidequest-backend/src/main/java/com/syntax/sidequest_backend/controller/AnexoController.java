@@ -44,6 +44,7 @@ public class AnexoController {
 
             for (MultipartFile file : files) {
                 Anexo anexo = anexoService.salvarAnexo(file, tarefaId);
+
                 AnexoDTO dto = new AnexoDTO();
                 dto.setId(anexo.getId());
                 dto.setTarefaId(anexo.getTarefaId());
@@ -52,6 +53,13 @@ public class AnexoController {
                 dto.setTamanho(anexo.getTamanho());
                 dto.setDataUpload(anexo.getDataUpload());
                 dto.setUrlDownload("/api/anexos/" + anexo.getId() + "/download");
+
+                // ✅ NOVOS: Retorna dados da tarefa
+                dto.setStatusTarefa(anexo.getStatusTarefa());
+                dto.setNomeTarefa(anexo.getNomeTarefa());
+                dto.setDescricaoTarefa(anexo.getDescricaoTarefa());
+                dto.setComentarioTarefa(anexo.getComentarioTarefa());
+
                 anexosSalvos.add(dto);
             }
 

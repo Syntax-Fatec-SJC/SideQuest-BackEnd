@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.syntax.sidequest_backend.modelo.dto.AnexoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Anexo;
+import com.syntax.sidequest_backend.modelo.entidade.Tarefa;
 import com.syntax.sidequest_backend.repositorio.AnexoRepositorio;
+import com.syntax.sidequest_backend.repositorio.TarefaRepositorio;
 
 @Service
 public class AnexoService {
@@ -28,7 +30,25 @@ public class AnexoService {
     @Autowired
     private AnexoRepositorio anexoRepositorio;
 
+    @Autowired
+    private TarefaRepositorio tarefaRepositorio;
+
     public Anexo salvarAnexo(MultipartFile file, String tarefaId) throws IOException {
+        // ✅ Busca a tarefa para pegar TODOS os dados
+        Tarefa tarefa = tarefaRepositorio.findById(tarefaId).orElse(null);
+
+        String statusTarefa = "Desconhecido";
+        String nomeTarefa = "Sem nome";
+        String descricaoTarefa = "";
+        String comentarioTarefa = "";
+
+        if (tarefa != null) {
+            statusTarefa = tarefa.getStatus() != null ? tarefa.getStatus() : "Desconhecido";
+            nomeTarefa = tarefa.getNome() != null ? tarefa.getNome() : "Sem nome";
+            descricaoTarefa = tarefa.getDescricao() != null ? tarefa.getDescricao() : "";
+            comentarioTarefa = tarefa.getComentario() != null ? tarefa.getComentario() : "";
+        }
+
         // Salva o arquivo no GridFS
         ObjectId fileId = gridFsTemplate.store(
                 file.getInputStream(),
@@ -36,7 +56,7 @@ public class AnexoService {
                 file.getContentType()
         );
 
-        // Cria o registro do anexo
+        // Cria o registro do anexo com TODOS os dados da tarefa
         Anexo anexo = new Anexo();
         anexo.setTarefaId(tarefaId);
         anexo.setNomeOriginal(file.getOriginalFilename());
@@ -44,6 +64,12 @@ public class AnexoService {
         anexo.setTamanho(file.getSize());
         anexo.setGridFsFileId(fileId.toString());
         anexo.setDataUpload(new Date());
+
+        // ✅ NOVOS: Salva dados da tarefa
+        anexo.setStatusTarefa(statusTarefa);
+        anexo.setNomeTarefa(nomeTarefa);
+        anexo.setDescricaoTarefa(descricaoTarefa);
+        anexo.setComentarioTarefa(comentarioTarefa);
 
         return anexoRepositorio.save(anexo);
     }
@@ -102,6 +128,13 @@ public class AnexoService {
         dto.setTamanho(anexo.getTamanho());
         dto.setDataUpload(anexo.getDataUpload());
         dto.setUrlDownload("/api/anexos/" + anexo.getId() + "/download");
+
+        // ✅ NOVOS: Retorna dados da tarefa
+        dto.setStatusTarefa(anexo.getStatusTarefa());
+        dto.setNomeTarefa(anexo.getNomeTarefa());
+        dto.setDescricaoTarefa(anexo.getDescricaoTarefa());
+        dto.setComentarioTarefa(anexo.getComentarioTarefa());
+
         return dto;
     }
 }

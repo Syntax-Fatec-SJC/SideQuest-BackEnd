@@ -16,9 +16,13 @@ public class Anexo {
 
     private String tarefaId;           // ID da tarefa associada
     private String nomeOriginal;       // Nome original do arquivo
-    private String contentType;        // Tipo MIME (image/png, video/mp4, etc)
+    private String contentType;        // Tipo MIME (image/png, video/mp4, etc.)
     private Long tamanho;              // Tamanho em bytes
     private String gridFsFileId;       // ID do arquivo no GridFS
     private Date dataUpload;           // Data do upload
     private String uploadedBy;         // ID do usuário que fez upload (opcional)
+    private String statusTarefa;       // Status da tarefa
+    private String nomeTarefa;         // Nome da tarefa
+    private String descricaoTarefa;    // Descrição da tarefa
+    private String comentarioTarefa;   // Comentário da tarefa
 }

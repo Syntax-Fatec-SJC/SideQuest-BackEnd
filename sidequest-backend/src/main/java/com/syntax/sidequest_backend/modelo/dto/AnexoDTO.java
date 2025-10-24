@@ -2,9 +2,13 @@ package com.syntax.sidequest_backend.modelo.dto;
 
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnexoDTO {
 
     private String id;
@@ -13,5 +17,9 @@ public class AnexoDTO {
     private String contentType;
     private Long tamanho;
     private Date dataUpload;
-    private String urlDownload;  // URL para baixar o arquivo
+    private String urlDownload;
+    private String statusTarefa;
+    private String nomeTarefa;
+    private String descricaoTarefa;
+    private String comentarioTarefa;
 }
