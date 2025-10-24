@@ -3,16 +3,17 @@ package com.syntax.sidequest_backend.seguranca;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.lang.NonNull;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -59,11 +60,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extrairTokenDaRequisicao(HttpServletRequest request) {
+        // Primeiro tenta extrair do header Authorization
         String cabecalhoAutorizacao = request.getHeader("Authorization");
 
         if (cabecalhoAutorizacao != null
                 && cabecalhoAutorizacao.startsWith("Bearer ")) {
             return cabecalhoAutorizacao.substring(7);
+        }
+
+        // Se não houver no header, tenta extrair do cookie httpOnly
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
 
         return null;
