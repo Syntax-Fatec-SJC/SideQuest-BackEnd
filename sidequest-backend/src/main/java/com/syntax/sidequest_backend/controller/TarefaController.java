@@ -47,20 +47,29 @@ public class TarefaController {
         return resposta;
     }
 
+    // Criar tarefa com JSON puro (SEM arquivos)
     @PostMapping("/cadastrar/tarefas")
-    public ResponseEntity<Tarefa> criar(
+    public ResponseEntity<Tarefa> criar(@RequestBody TarefaDTO tarefaDto) {
+        try {
+            Tarefa tarefaCriada = service.criarTarefa(tarefaDto);
+            return new ResponseEntity<>(tarefaCriada, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // ✅ ANTIGO: Criar tarefa com arquivos (multipart) - MANTIDO para compatibilidade
+    @PostMapping("/cadastrar/tarefas/com-arquivos")
+    public ResponseEntity<Tarefa> criarComArquivos(
             @RequestPart("tarefa") String tarefaJson,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
         try {
-            // Converte JSON para TarefaDTO
             ObjectMapper mapper = new ObjectMapper();
             TarefaDTO tarefaDto = mapper.readValue(tarefaJson, TarefaDTO.class);
-
-            // Cria a tarefa
             Tarefa tarefaCriada = service.criarTarefa(tarefaDto);
 
-            // Salva os arquivos se houver
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
                     anexoService.salvarAnexo(file, tarefaCriada.getId());
@@ -74,22 +83,34 @@ public class TarefaController {
         }
     }
 
+    // ✅ NOVO: Atualizar tarefa com JSON puro (SEM arquivos)
     @PutMapping("/atualizar/tarefas/{id}")
     public ResponseEntity<Tarefa> atualizar(
+            @PathVariable String id,
+            @RequestBody TarefaDTO tarefaDto) {
+        try {
+            tarefaDto.setId(id);
+            Tarefa tarefaAtualizada = service.atualizarTarefa(tarefaDto);
+            return new ResponseEntity<>(tarefaAtualizada, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // ✅ ANTIGO: Atualizar tarefa com arquivos (multipart) - MANTIDO
+    @PutMapping("/atualizar/tarefas/{id}/com-arquivos")
+    public ResponseEntity<Tarefa> atualizarComArquivos(
             @PathVariable String id,
             @RequestPart("tarefa") String tarefaJson,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
         try {
-            // Converte JSON para TarefaDTO
             ObjectMapper mapper = new ObjectMapper();
             TarefaDTO tarefaDto = mapper.readValue(tarefaJson, TarefaDTO.class);
             tarefaDto.setId(id);
-
-            // Atualiza a tarefa
             Tarefa tarefaAtualizada = service.atualizarTarefa(tarefaDto);
 
-            // Salva novos arquivos se houver
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
                     anexoService.salvarAnexo(file, id);
@@ -107,7 +128,6 @@ public class TarefaController {
     public ResponseEntity<Void> excluir(@PathVariable String id) {
         // Deleta os anexos primeiro
         anexoService.deletarPorTarefa(id);
-
         // Depois deleta a tarefa
         service.excluirTarefaPorId(id);
         return ResponseEntity.noContent().build();
