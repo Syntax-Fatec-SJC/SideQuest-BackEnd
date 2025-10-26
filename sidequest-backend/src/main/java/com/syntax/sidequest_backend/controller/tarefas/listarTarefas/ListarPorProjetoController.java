@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.service.tarefas.listarTarefas.ListarPorProjetoService;
 
 @CrossOrigin(origins = {"http://localhost:5173"})
@@ -21,11 +21,6 @@ public class ListarPorProjetoController {
 
 	@GetMapping("/projetos/{projetoId}/tarefas")
 	public ResponseEntity<List<TarefaDTO>> listarPorProjeto(@PathVariable String projetoId) {
-		return ResponseEntity.ok(listarPorProjetoService.executar(projetoId));
-	}
-
-	@GetMapping("/listar/{projetoId}/tarefas")
-	public ResponseEntity<List<TarefaDTO>> listarPorProjetoAlternativo(@PathVariable String projetoId) {
 		return ResponseEntity.ok(listarPorProjetoService.executar(projetoId));
 	}
 }

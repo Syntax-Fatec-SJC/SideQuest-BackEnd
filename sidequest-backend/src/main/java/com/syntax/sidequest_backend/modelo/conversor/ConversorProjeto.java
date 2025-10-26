@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.projetoDTO.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 
 public class ConversorProjeto {

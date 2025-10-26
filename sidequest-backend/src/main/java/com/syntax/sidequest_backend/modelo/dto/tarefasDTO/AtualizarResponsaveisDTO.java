@@ -1,4 +1,4 @@
-package com.syntax.sidequest_backend.modelo.dto.tarefas;
+package com.syntax.sidequest_backend.modelo.dto.tarefasDTO;
 
 import java.util.List;
 

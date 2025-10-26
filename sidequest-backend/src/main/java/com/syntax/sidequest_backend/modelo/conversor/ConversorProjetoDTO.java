@@ -3,7 +3,7 @@ package com.syntax.sidequest_backend.modelo.conversor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.projetoDTO.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 
 public class ConversorProjetoDTO {

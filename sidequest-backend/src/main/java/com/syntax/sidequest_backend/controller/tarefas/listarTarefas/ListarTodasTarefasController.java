@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.service.tarefas.listarTarefas.ListarTodasService;
 
 @CrossOrigin(origins = {"http://localhost:5173"})
 @RestController
-public class ListarTodasController {
+public class ListarTodasTarefasController {
 
 	@Autowired
 	private ListarTodasService listarTodasService;
