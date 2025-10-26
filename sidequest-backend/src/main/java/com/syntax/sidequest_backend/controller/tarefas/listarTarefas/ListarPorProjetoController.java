@@ -23,9 +23,4 @@ public class ListarPorProjetoController {
 	public ResponseEntity<List<TarefaDTO>> listarPorProjeto(@PathVariable String projetoId) {
 		return ResponseEntity.ok(listarPorProjetoService.executar(projetoId));
 	}
-
-	@GetMapping("/listar/{projetoId}/tarefas")
-	public ResponseEntity<List<TarefaDTO>> listarPorProjetoAlternativo(@PathVariable String projetoId) {
-		return ResponseEntity.ok(listarPorProjetoService.executar(projetoId));
-	}
 }

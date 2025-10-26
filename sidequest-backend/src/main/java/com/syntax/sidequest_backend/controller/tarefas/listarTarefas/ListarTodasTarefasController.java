@@ -13,7 +13,7 @@ import com.syntax.sidequest_backend.service.tarefas.listarTarefas.ListarTodasSer
 
 @CrossOrigin(origins = {"http://localhost:5173"})
 @RestController
-public class ListarTodasController {
+public class ListarTodasTarefasController {
 
 	@Autowired
 	private ListarTodasService listarTodasService;

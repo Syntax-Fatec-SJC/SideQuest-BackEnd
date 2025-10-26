@@ -44,8 +44,7 @@ public class SegurancaConfiguracao {
                     "/logout",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/usuarios/*/proximas-entregas"
+                    "/swagger-ui.html"
                 )
                 .permitAll()
                 .anyRequest().authenticated()
