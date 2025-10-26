@@ -1,21 +1,24 @@
-package com.syntax.sidequest_backend.modelo.entidade;
+package com.syntax.sidequest_backend.modelo.dto.projetoDTO;
 
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.mongodb.lang.Nullable;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Document(collection = "projetos")
-public class Projeto {
-    @Id
+public class ProjetoDTO {
     private String id;
+    @NotNull
     private String status;
+    @NotNull
     private String nome;
+    @Nullable
     private String descricao;
+    @Nullable
     private Date prazoFinal;
+    @Nullable
     private List<String> usuarioIds;
 }
