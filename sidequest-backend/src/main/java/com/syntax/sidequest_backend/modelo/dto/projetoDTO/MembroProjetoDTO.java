@@ -1,4 +1,4 @@
-package com.syntax.sidequest_backend.modelo.dto;
+package com.syntax.sidequest_backend.modelo.dto.projetoDTO;
 
 public record MembroProjetoDTO(
     String usuarioId,

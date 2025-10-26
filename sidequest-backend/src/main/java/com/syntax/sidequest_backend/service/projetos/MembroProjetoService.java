@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.syntax.sidequest_backend.modelo.dto.MembroProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.projetoDTO.MembroProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 import com.syntax.sidequest_backend.modelo.entidade.Usuario;
 import com.syntax.sidequest_backend.repositorio.ProjetoRepositorio;

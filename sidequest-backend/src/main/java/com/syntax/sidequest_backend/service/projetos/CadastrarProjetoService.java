@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.syntax.sidequest_backend.modelo.conversor.ConversorProjeto;
 import com.syntax.sidequest_backend.modelo.conversor.ConversorProjetoDTO;
-import com.syntax.sidequest_backend.modelo.dto.ProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.projetoDTO.ProjetoDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Projeto;
 import com.syntax.sidequest_backend.repositorio.ProjetoRepositorio;
 

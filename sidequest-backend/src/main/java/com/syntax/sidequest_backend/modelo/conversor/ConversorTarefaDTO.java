@@ -3,7 +3,7 @@ package com.syntax.sidequest_backend.modelo.conversor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Tarefa;
 public class ConversorTarefaDTO {
 

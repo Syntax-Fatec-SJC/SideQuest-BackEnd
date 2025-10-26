@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.sidequest_backend.modelo.dto.MembroProjetoDTO;
+import com.syntax.sidequest_backend.modelo.dto.projetoDTO.MembroProjetoDTO;
 import com.syntax.sidequest_backend.service.projetos.MembroProjetoService;
 
 @CrossOrigin(origins = {"http://localhost:5173"})

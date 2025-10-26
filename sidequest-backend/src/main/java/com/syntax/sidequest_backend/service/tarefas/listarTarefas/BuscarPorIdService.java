@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.syntax.sidequest_backend.modelo.conversor.ConversorTarefa;
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Tarefa;
 import com.syntax.sidequest_backend.repositorio.TarefaRepositorio;
 

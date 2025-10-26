@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
-import com.syntax.sidequest_backend.modelo.dto.tarefas.AtualizarResponsaveisDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.AtualizarResponsaveisDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.service.tarefas.AtualizarTarefaService;
 
 import jakarta.validation.Valid;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.syntax.sidequest_backend.modelo.dto.TarefaDTO;
+import com.syntax.sidequest_backend.modelo.dto.tarefasDTO.TarefaDTO;
 import com.syntax.sidequest_backend.modelo.entidade.Tarefa;
 
 public class ConversorTarefa {

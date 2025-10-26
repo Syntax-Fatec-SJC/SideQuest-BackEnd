@@ -1,31 +1,24 @@
-package com.syntax.sidequest_backend.modelo.dto;
+package com.syntax.sidequest_backend.modelo.dto.projetoDTO;
 
 import java.util.Date;
 import java.util.List;
+
+import com.mongodb.lang.Nullable;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class TarefaDTO {
-
+public class ProjetoDTO {
     private String id;
-
-    @NotNull
-    private String nome;
-
-    private Date prazoFinal;
-
     @NotNull
     private String status;
-
-    private String comentario;
-
+    @NotNull
+    private String nome;
+    @Nullable
     private String descricao;
-
-    private String projetoId;
-
-    private List<String> anexos;
-
+    @Nullable
+    private Date prazoFinal;
+    @Nullable
     private List<String> usuarioIds;
 }
