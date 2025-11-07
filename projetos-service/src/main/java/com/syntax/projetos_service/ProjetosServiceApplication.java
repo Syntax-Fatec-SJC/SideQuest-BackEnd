@@ -8,6 +8,7 @@ public class ProjetosServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetosServiceApplication.class, args);
+		System.out.println("Projetos Service iniciado na porta 8083");
 	}
 
 }
