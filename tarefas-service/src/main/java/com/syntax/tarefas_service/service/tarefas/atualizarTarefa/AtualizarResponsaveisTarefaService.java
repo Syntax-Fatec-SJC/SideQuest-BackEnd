@@ -1,4 +1,4 @@
-package com.syntax.tarefas_service.service.tarefas;
+package com.syntax.tarefas_service.service.tarefas.atualizarTarefa;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,17 +12,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.syntax.tarefas_service.client.ProjetosClient;
 import com.syntax.tarefas_service.modelo.conversor.ConversorTarefa;
-import com.syntax.tarefas_service.modelo.conversor.ConversorTarefaDTO;
 import com.syntax.tarefas_service.modelo.dto.tarefaDTO.ProjetoDTO;
 import com.syntax.tarefas_service.modelo.dto.tarefaDTO.TarefaDTO;
 import com.syntax.tarefas_service.modelo.entidade.Tarefa;
 import com.syntax.tarefas_service.repositorio.TarefaRepositorio;
 
 /**
- * Service para atualizar tarefa
+ * Service para atualizar apenas os responsáveis da tarefa
  */
 @Service
-public class AtualizarTarefaService {
+public class AtualizarResponsaveisTarefaService {
 
     @Autowired
     private TarefaRepositorio tarefaRepositorio;
@@ -30,30 +29,7 @@ public class AtualizarTarefaService {
     @Autowired
     private ProjetosClient projetosClient;
 
-    public TarefaDTO executar(String id, TarefaDTO dto) {
-        Tarefa existente = tarefaRepositorio.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
-
-        String projetoId = dto.getProjetoId();
-        if (projetoId == null || projetoId.isBlank()) {
-            projetoId = existente.getProjetoId();
-        }
-
-        ProjetoDTO projeto = projetosClient.buscarProjeto(projetoId);
-
-        List<String> usuarioIds = normalizarLista(dto.getUsuarioIds());
-        validarUsuariosDoProjeto(usuarioIds, projeto);
-
-        Tarefa atualizado = new ConversorTarefaDTO().converter(dto);
-        atualizado.setId(id);
-        atualizado.setProjetoId(projetoId);
-        atualizado.setUsuarioIds(usuarioIds);
-
-        Tarefa salvo = tarefaRepositorio.save(atualizado);
-        return ConversorTarefa.converter(salvo);
-    }
-
-    public TarefaDTO atualizarResponsaveis(String tarefaId, List<String> usuarioIds) {
+    public TarefaDTO executar(String tarefaId, List<String> usuarioIds) {
         Tarefa tarefa = tarefaRepositorio.findById(tarefaId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada"));
 
