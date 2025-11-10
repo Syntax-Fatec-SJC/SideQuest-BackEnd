@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.syntax.tarefas_service.modelo.dto.tarefaDTO.TarefaDTO;
@@ -22,8 +22,8 @@ public class ListarPorUsuarioController {
     @Autowired
     private ListarPorUsuarioService listarPorUsuarioService;
 
-    @GetMapping("/usuarios/{usuarioId}/tarefas")
-    public ResponseEntity<List<TarefaDTO>> listarPorUsuario(@PathVariable String usuarioId) {
+    @GetMapping("/tarefas/minhas")
+    public ResponseEntity<List<TarefaDTO>> listarPorUsuario(@RequestHeader("X-User-Id") String usuarioId) {
         return ResponseEntity.ok(listarPorUsuarioService.executar(usuarioId));
     }
 }
