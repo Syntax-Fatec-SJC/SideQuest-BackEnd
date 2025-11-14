@@ -36,11 +36,12 @@ public class ListarTarefasGatewayController {
         return listarTarefasService.listar(path, request);
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Tarefas Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Tarefas Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }

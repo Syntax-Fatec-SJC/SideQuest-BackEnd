@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
 /**
@@ -18,23 +21,22 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class OpenApiConfig {
 
+    // Porta do serviço
     @Value("${server.port:8084}")
     private String serverPort;
 
     @Bean
     public OpenAPI tarefasServiceOpenAPI() {
-        Server devServer = new Server();
-        devServer.setUrl("http://localhost:" + serverPort);
-        devServer.setDescription("Servidor de Desenvolvimento");
+        // Servidor do serviço local (dev)
+        Server devServer = new Server()
+                .url("http://localhost:" + serverPort)
+                .description("Servidor de Desenvolvimento");
 
-        Server gatewayServer = new Server();
-        gatewayServer.setUrl("http://localhost:8080");
-        gatewayServer.setDescription("API Gateway (Produção)");
-
-        Contact contact = new Contact();
-        contact.setEmail("syntax@fatec.sp.gov.br");
-        contact.setName("Equipe Syntax - FATEC SJC");
-        contact.setUrl("https://github.com/Syntax-Fatec-SJC");
+        // Contato e licença
+        Contact contact = new Contact()
+                .name("Equipe Syntax - FATEC SJC")
+                .email("syntax@fatec.sp.gov.br")
+                .url("https://github.com/Syntax-Fatec-SJC");
 
         License license = new License()
                 .name("MIT License")
@@ -43,14 +45,29 @@ public class OpenApiConfig {
         Info info = new Info()
                 .title("SideQuest - API de Tarefas")
                 .version("1.0.0")
-                .contact(contact)
                 .description("Microserviço responsável pelo gerenciamento de tarefas do sistema SideQuest. "
                         + "Permite criar, atualizar, listar e deletar tarefas, além de gerenciar responsáveis.")
+                .contact(contact)
                 .termsOfService("https://sidequest.com/terms")
                 .license(license);
 
+        // Configuração de Segurança JWT
+        String securitySchemeName = "bearerAuth";
+
+        SecurityScheme securityScheme = new SecurityScheme()
+                .name(securitySchemeName)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .description("Insira o token JWT obtido no login");
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList(securitySchemeName);
+
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer, gatewayServer));
+                .servers(List.of(devServer)) // apenas o servidor do serviço
+                .components(new Components().addSecuritySchemes(securitySchemeName, securityScheme))
+                .addSecurityItem(securityRequirement);
     }
 }

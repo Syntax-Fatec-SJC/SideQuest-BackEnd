@@ -26,24 +26,24 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filtro de autenticação JWT para o API Gateway
- * Valida tokens JWT e propaga informações do usuário para microserviços
+ * Filtro de autenticação JWT para o API Gateway Valida tokens JWT e propaga
+ * informações do usuário para microserviços
  */
 @Component
-@Order(2) // Executa depois do LoggingFilter
+@Order(2)
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    
+
     @Autowired
     private JwtUtil jwtUtil;
-    
+
     private static final String GATEWAY_SECRET = "SideQuestGatewaySecret2024";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                  HttpServletResponse response, 
-                                  FilterChain filterChain) 
+    protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
@@ -94,12 +94,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         logger.info("✅ Token válido - User: {} ({})", finalEmail, finalUserId);
 
         // Cria autenticação no contexto Spring Security
-        UsernamePasswordAuthenticationToken authenticationToken = 
-            new UsernamePasswordAuthenticationToken(
-                finalEmail, 
-                null, 
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-            );
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(
+                        finalEmail,
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
@@ -148,15 +148,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // Não aplica filtro em endpoints públicos
-        return path.equals("/") ||
-               path.equals("/health") ||
-               path.contains("/health/") ||
-               path.contains("/usuario/login") ||
-               path.contains("/usuario/cadastrar") ||
-               path.contains("/actuator") ||
-               path.contains("/swagger") ||
-               path.contains("/api-docs") ||
-               path.startsWith("/v3/api-docs");
+        String method = request.getMethod();
+
+        // ===== ENDPOINTS PÚBLICOS (não exigem token JWT) =====
+        // Login e cadastro são PÚBLICOS
+        return path.equals("/health")
+                || path.startsWith("/actuator")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html")
+                || // Login - PÚBLICO
+                (path.equals("/usuario/login") && method.equals("POST"))
+                || (path.equals("/usuarios/login") && method.equals("POST"))
+                || path.contains("/login")
+                || // Cadastro - PÚBLICO
+                (path.equals("/usuario/cadastrar") && method.equals("POST"))
+                || (path.equals("/usuarios/cadastrar") && method.equals("POST"))
+                || (path.equals("/cadastrar") && method.equals("POST"))
+                || path.startsWith("/cadastrar/") && method.equals("POST");
     }
 }

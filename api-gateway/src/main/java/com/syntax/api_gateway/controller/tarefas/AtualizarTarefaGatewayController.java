@@ -47,20 +47,22 @@ public class AtualizarTarefaGatewayController {
         return atualizarTarefaService.atualizarParcial(path, body, request);
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Tarefas Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Tarefas Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponsePatch(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Tarefas Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Tarefas Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }

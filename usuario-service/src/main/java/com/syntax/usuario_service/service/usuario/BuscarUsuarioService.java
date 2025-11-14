@@ -10,11 +10,15 @@ import com.syntax.usuario_service.repositorio.UsuarioRepositorio;
 
 @Service
 public class BuscarUsuarioService {
-    
+
     @Autowired
     private UsuarioRepositorio repositorio;
 
     public Usuario buscarPorId(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("O ID não pode ser nulo");
+        }
+
         return repositorio.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Usuário não encontrado com ID: " + id));
     }

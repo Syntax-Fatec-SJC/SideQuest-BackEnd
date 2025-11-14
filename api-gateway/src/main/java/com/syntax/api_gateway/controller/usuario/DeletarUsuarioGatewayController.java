@@ -36,11 +36,12 @@ public class DeletarUsuarioGatewayController {
         return deletarUsuarioService.deletar(path, request);
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Usuario Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Usuario Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }

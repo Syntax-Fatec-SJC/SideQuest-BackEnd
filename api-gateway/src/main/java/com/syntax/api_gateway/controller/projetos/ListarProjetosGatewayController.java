@@ -36,11 +36,12 @@ public class ListarProjetosGatewayController {
         return listarProjetosService.listar(path, request);
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Projetos Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Projetos Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }

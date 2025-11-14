@@ -37,11 +37,12 @@ public class AtualizarUsuarioGatewayController {
         return atualizarUsuarioService.atualizar(path, body, request);
     }
 
+    @SuppressWarnings("unused")
     private Mono<ResponseEntity<Object>> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Usuario Service temporariamente indisponível",
-            "mensagem", "Tente novamente em alguns instantes",
-            "detalhes", e.getMessage()
+                "erro", "Usuario Service temporariamente indisponível",
+                "mensagem", "Tente novamente em alguns instantes",
+                "detalhes", e.getMessage()
         );
         return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
     }

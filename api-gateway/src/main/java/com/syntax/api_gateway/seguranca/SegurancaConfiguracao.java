@@ -10,7 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Configuração de segurança do API Gateway
+ * Configuração de segurança do API Gateway - Login e cadastro são PÚBLICOS -
+ * Todos os outros endpoints são PROTEGIDOS
  */
 @Configuration
 @EnableWebSecurity
@@ -22,28 +23,37 @@ public class SegurancaConfiguracao {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authorizeHttpRequests(auth -> auth
-                // Endpoints públicos (sem autenticação)
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session
+                        -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+                // ===== ENDPOINTS PÚBLICOS (LOGIN E CADASTRO) =====
                 .requestMatchers(
-                    "/usuario/login",
-                    "/usuario/cadastrar",
-                    "/health",
-                    "/health/**",
-                    "/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/v3/api-docs/**",
-                    "/actuator/**"
+                        // Login
+                        "/usuario/login",
+                        "/usuarios/login",
+                        "/login",
+                        "/*/login",
+                        // Cadastro
+                        "/usuario/cadastrar",
+                        "/usuarios/cadastrar",
+                        "/cadastrar",
+                        "/cadastrar/**",
+                        "/*/cadastrar",
+                        // Documentação e monitoramento
+                        "/health",
+                        "/health/**",
+                        "/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/actuator/**"
                 ).permitAll()
-                
-                // Todos os outros endpoints requerem autenticação
+                // ===== TODOS OS OUTROS ENDPOINTS SÃO PROTEGIDOS =====
                 .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
