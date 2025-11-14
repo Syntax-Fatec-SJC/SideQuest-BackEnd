@@ -1,10 +1,14 @@
 package com.fatec.anexo_service.seguranca;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.Filter;
@@ -43,7 +47,7 @@ public class GatewayAuthenticationFilter implements Filter {
         String gatewaySecret = httpRequest.getHeader(GATEWAY_SECRET_HEADER);
 
         if (gatewaySecret == null || !gatewaySecret.equals(GATEWAY_SECRET)) {
-            logger.warn(" Acesso direto bloqueado: {}", path);
+            logger.warn("❌ Acesso direto bloqueado: {}", path);
             httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             httpResponse.setContentType("application/json");
             httpResponse.getWriter().write(
@@ -57,18 +61,33 @@ public class GatewayAuthenticationFilter implements Filter {
         String userEmail = httpRequest.getHeader(USER_EMAIL_HEADER);
 
         if (userId == null || userEmail == null) {
-            logger.warn(" Headers de autenticação ausentes: {}", path);
+            logger.warn("⚠️ Headers de autenticação ausentes: {}", path);
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.setContentType("application/json");
             httpResponse.getWriter().write("{\"erro\":\"Usuário não autenticado\"}");
             return;
         }
 
+        // ✅ NOVO: Criar autenticação no SecurityContext do Spring Security
+        UsernamePasswordAuthenticationToken authentication
+                = new UsernamePasswordAuthenticationToken(
+                        userEmail,
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         httpRequest.setAttribute("userId", userId);
         httpRequest.setAttribute("userEmail", userEmail);
 
-        logger.debug(" Requisição autenticada - User: {} ({})", userEmail, userId);
-        chain.doFilter(request, response);
+        logger.debug("✅ Requisição autenticada - User: {} ({})", userEmail, userId);
+
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            // Limpa o contexto após processar
+            SecurityContextHolder.clearContext();
+        }
     }
 
     private boolean isPublicEndpoint(String path) {
