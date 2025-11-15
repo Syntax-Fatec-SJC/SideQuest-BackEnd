@@ -1,0 +1,170 @@
+package com.syntax.api_gateway.seguranca;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+
+/**
+ * Filtro de autenticação JWT para o API Gateway Valida tokens JWT e propaga
+ * informações do usuário para microserviços
+ */
+@Component
+@Order(2)
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private static final String GATEWAY_SECRET = "SideQuestGatewaySecret2024";
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // Endpoints públicos não precisam de token
+        if (shouldNotFilter(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Extrai o token
+        final String authorizationHeader = request.getHeader("Authorization");
+        String jwt = null;
+        String email = null;
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwt = authorizationHeader.substring(7);
+            try {
+                email = jwtUtil.extractEmail(jwt);
+            } catch (Exception e) {
+                logger.error("❌ Erro ao extrair email do token: {}", e.getMessage());
+            }
+        }
+
+        // Se não tem token, bloqueia
+        if (jwt == null) {
+            logger.warn("❌ Token ausente: {}", path);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"erro\":\"Token JWT ausente\"}");
+            return;
+        }
+
+        // Valida o token
+        if (!jwtUtil.validateToken(jwt)) {
+            logger.warn("❌ Token inválido ou expirado: {}", path);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"erro\":\"Token JWT inválido ou expirado\"}");
+            return;
+        }
+
+        // Extrai informações do usuário
+        String userId = jwtUtil.extractUserId(jwt);
+        final String finalEmail = email;
+        final String finalUserId = userId;
+
+        logger.info("✅ Token válido - User: {} ({})", finalEmail, finalUserId);
+
+        // Cria autenticação no contexto Spring Security
+        UsernamePasswordAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(
+                        finalEmail,
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        // Cria wrapper para adicionar headers customizados que serão propagados aos microserviços
+        HttpServletRequestWrapper wrappedRequest = new HttpServletRequestWrapper(request) {
+            private Map<String, String> customHeaders = new HashMap<>();
+
+            {
+                customHeaders.put("X-User-Id", finalUserId);
+                customHeaders.put("X-User-Email", finalEmail);
+                customHeaders.put("X-Gateway-Secret", GATEWAY_SECRET);
+            }
+
+            @Override
+            public String getHeader(String name) {
+                String headerValue = customHeaders.get(name);
+                if (headerValue != null) {
+                    return headerValue;
+                }
+                return super.getHeader(name);
+            }
+
+            @Override
+            public Enumeration<String> getHeaderNames() {
+                Set<String> set = new HashSet<>(customHeaders.keySet());
+                Enumeration<String> e = super.getHeaderNames();
+                while (e.hasMoreElements()) {
+                    set.add(e.nextElement());
+                }
+                return Collections.enumeration(set);
+            }
+
+            @Override
+            public Enumeration<String> getHeaders(String name) {
+                String headerValue = customHeaders.get(name);
+                if (headerValue != null) {
+                    return Collections.enumeration(Collections.singletonList(headerValue));
+                }
+                return super.getHeaders(name);
+            }
+        };
+
+        filterChain.doFilter(wrappedRequest, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        // ===== ENDPOINTS PÚBLICOS (não exigem token JWT) =====
+        // Login e cadastro são PÚBLICOS
+        return path.equals("/health")
+                || path.startsWith("/actuator")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html")
+                || // Login - PÚBLICO
+                (path.equals("/usuario/login") && method.equals("POST"))
+                || (path.equals("/usuarios/login") && method.equals("POST"))
+                || path.contains("/login")
+                || // Cadastro - PÚBLICO
+                (path.equals("/usuario/cadastrar") && method.equals("POST"))
+                || (path.equals("/usuarios/cadastrar") && method.equals("POST"))
+                || (path.equals("/cadastrar") && method.equals("POST"))
+                || path.startsWith("/cadastrar/") && method.equals("POST");
+    }
+}

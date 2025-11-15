@@ -38,7 +38,7 @@ public class ListarPorUsuarioController {
         if (usuarioOpt.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
-        String usuarioId = usuarioOpt.get().getId().toString();
+        String usuarioId = usuarioOpt.get().getId();
 
         return ResponseEntity.ok(listarPorUsuarioService.executar(usuarioId));
     }
