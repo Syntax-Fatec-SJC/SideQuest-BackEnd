@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,25 +19,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Controller para buscar usuários via Gateway
+ * Controller para buscar usuário via Gateway
  */
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class BuscarUsuarioGatewayController {
 
     @Autowired
     private BuscarUsuarioService buscarUsuarioService;
 
-    @GetMapping("/**")
+    @GetMapping("/{id}")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> buscar(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return buscarUsuarioService.buscar(path, request);
+    public Mono<ResponseEntity<Object>> buscar(@PathVariable String id, HttpServletRequest request) {
+        return buscarUsuarioService.buscar(id, request);
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private Mono<ResponseEntity<Object>> fallbackResponse(String id, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",

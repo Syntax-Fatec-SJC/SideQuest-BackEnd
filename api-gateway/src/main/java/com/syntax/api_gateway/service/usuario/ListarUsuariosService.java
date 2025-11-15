@@ -11,10 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Service responsável por deletar usuários do Usuario Service
+ * Service responsável por listar usuários no Usuario Service
  */
 @Service
-public class DeletarUsuarioService {
+public class ListarUsuariosService {
 
     @Autowired
     private PropriedadesMicroservicos propriedades;
@@ -23,12 +23,12 @@ public class DeletarUsuarioService {
     private WebClient webClient;
 
     /**
-     * Realiza requisição DELETE para deletar usuário
+     * Realiza requisição GET para listar todos os usuários
      */
-    public Mono<ResponseEntity<Object>> deletar(String id, HttpServletRequest request) {
-        String url = propriedades.getUsuario().getUrl() + "/usuarios/" + id;
+    public Mono<ResponseEntity<Object>> listar(HttpServletRequest request) {
+        String url = propriedades.getUsuario().getUrl() + "/usuarios";
 
-        return webClient.delete()
+        return webClient.get()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
                 .header("X-User-Id", request.getHeader("X-User-Id"))

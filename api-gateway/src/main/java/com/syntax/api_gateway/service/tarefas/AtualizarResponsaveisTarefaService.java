@@ -1,4 +1,6 @@
-package com.syntax.api_gateway.service.usuario;
+package com.syntax.api_gateway.service.tarefas;
+
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Service responsável por deletar usuários do Usuario Service
+ * Service responsável por atualizar responsáveis de tarefa no Tarefas Service
  */
 @Service
-public class DeletarUsuarioService {
+public class AtualizarResponsaveisTarefaService {
 
     @Autowired
     private PropriedadesMicroservicos propriedades;
@@ -23,17 +25,18 @@ public class DeletarUsuarioService {
     private WebClient webClient;
 
     /**
-     * Realiza requisição DELETE para deletar usuário
+     * Realiza requisição PATCH para atualizar responsáveis da tarefa
      */
-    public Mono<ResponseEntity<Object>> deletar(String id, HttpServletRequest request) {
-        String url = propriedades.getUsuario().getUrl() + "/usuarios/" + id;
+    public Mono<ResponseEntity<Object>> atualizarResponsaveis(String id, Object body, HttpServletRequest request) {
+        String url = propriedades.getTarefas().getUrl() + "/tarefas/" + id + "/responsaveis";
 
-        return webClient.delete()
+        return webClient.patch()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
                 .header("X-User-Id", request.getHeader("X-User-Id"))
                 .header("X-User-Email", request.getHeader("X-User-Email"))
                 .header("X-Gateway-Secret", request.getHeader("X-Gateway-Secret"))
+                .bodyValue(body != null ? body : Collections.emptyMap())
                 .retrieve()
                 .toEntity(Object.class);
     }

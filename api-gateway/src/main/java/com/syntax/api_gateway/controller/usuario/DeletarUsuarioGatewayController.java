@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,25 +19,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Controller para deletar usuários via Gateway
+ * Controller para deletar usuário via Gateway
  */
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class DeletarUsuarioGatewayController {
 
     @Autowired
     private DeletarUsuarioService deletarUsuarioService;
 
-    @DeleteMapping("/**")
+    @DeleteMapping("/{id}")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> deletar(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return deletarUsuarioService.deletar(path, request);
+    public Mono<ResponseEntity<Object>> deletar(@PathVariable String id, HttpServletRequest request) {
+        return deletarUsuarioService.deletar(id, request);
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private Mono<ResponseEntity<Object>> fallbackResponse(String id, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",

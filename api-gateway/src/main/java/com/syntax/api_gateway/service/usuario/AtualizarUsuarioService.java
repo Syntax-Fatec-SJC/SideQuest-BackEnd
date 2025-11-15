@@ -25,8 +25,8 @@ public class AtualizarUsuarioService {
     /**
      * Realiza requisição PUT para atualizar usuário
      */
-    public Mono<ResponseEntity<Object>> atualizar(String path, Object body, HttpServletRequest request) {
-        String url = propriedades.getUsuario().getUrl() + path;
+    public Mono<ResponseEntity<Object>> atualizar(String id, Object body, HttpServletRequest request) {
+        String url = propriedades.getUsuario().getUrl() + "/usuarios/" + id;
 
         return webClient.put()
                 .uri(url)

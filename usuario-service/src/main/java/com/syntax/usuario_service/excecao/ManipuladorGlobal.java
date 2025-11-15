@@ -1,6 +1,5 @@
 package com.syntax.usuario_service.excecao;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -15,81 +14,104 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.syntax.usuario_service.excecao.personalizado.CredenciaisInvalidasException;
 import com.syntax.usuario_service.excecao.personalizado.UsuarioExistenteException;
+import com.syntax.usuario_service.modelo.dto.RespostaDTO.ErroRespostaDTO;
 
+/**
+ * Manipulador global de exceções para o microserviço de usuários
+ */
 @ControllerAdvice
 public class ManipuladorGlobal {
 
+    /**
+     * Trata erros de validação de campos
+     * Mantém o formato de Map para erros de validação múltiplos
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Erro de Validação");
-        response.put("message", "Campos inválidos");
-        response.put("errors", errors);
-
-        return ResponseEntity.badRequest().body(response);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Trata exceções de credenciais inválidas (login)
+     */
     @ExceptionHandler(CredenciaisInvalidasException.class)
-    public ResponseEntity<Map<String, Object>> handleCredenciaisInvalidasException(CredenciaisInvalidasException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.UNAUTHORIZED.value());
-        response.put("error", "Credenciais Inválidas");
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    public ResponseEntity<ErroRespostaDTO> handleCredenciaisInvalidasException(CredenciaisInvalidasException ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            HttpStatus.UNAUTHORIZED.value(),
+            "Credenciais Inválidas",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
     }
 
+    /**
+     * Trata exceções de usuário já existente (cadastro)
+     */
     @ExceptionHandler(UsuarioExistenteException.class)
-    public ResponseEntity<Map<String, Object>> handleUsuarioExistenteException(UsuarioExistenteException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("error", "Usuário Já Existe");
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    public ResponseEntity<ErroRespostaDTO> handleUsuarioExistenteException(UsuarioExistenteException ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            HttpStatus.CONFLICT.value(),
+            "Usuário Já Existe",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
     }
 
+    /**
+     * Trata exceções de elemento não encontrado
+     */
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Map<String, Object>> handleNoSuchElementException(NoSuchElementException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.NOT_FOUND.value());
-        response.put("error", "Recurso Não Encontrado");
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    public ResponseEntity<ErroRespostaDTO> handleNoSuchElementException(NoSuchElementException ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            HttpStatus.NOT_FOUND.value(),
+            "Recurso Não Encontrado",
+            ex.getMessage() != null ? ex.getMessage() : "O recurso solicitado não foi encontrado"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
+    /**
+     * Trata exceções de argumento ilegal
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroRespostaDTO> handleIllegalArgument(IllegalArgumentException ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            HttpStatus.BAD_REQUEST.value(),
+            "Argumento Inválido",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    /**
+     * Trata exceções de status HTTP customizadas
+     */
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", ex.getStatusCode().value());
-        response.put("error", "Erro no Servidor");
-        response.put("message", ex.getReason());
-
-        return ResponseEntity.status(ex.getStatusCode()).body(response);
+    public ResponseEntity<ErroRespostaDTO> handleResponseStatusException(ResponseStatusException ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            ex.getStatusCode().value(),
+            "Erro no Servidor",
+            ex.getReason() != null ? ex.getReason() : "Erro no processamento da requisição"
+        );
+        return ResponseEntity.status(ex.getStatusCode()).body(erro);
     }
 
+    /**
+     * Trata exceções genéricas não tratadas especificamente
+     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Erro Interno do Servidor");
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<ErroRespostaDTO> handleGenericException(Exception ex) {
+        ErroRespostaDTO erro = new ErroRespostaDTO(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Erro Interno do Servidor",
+            "Ocorreu um erro inesperado. Tente novamente mais tarde."
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 }

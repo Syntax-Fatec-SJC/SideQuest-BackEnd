@@ -25,12 +25,8 @@ public class BuscarUsuarioService {
     /**
      * Realiza requisição GET para buscar usuário
      */
-    public Mono<ResponseEntity<Object>> buscar(String path, HttpServletRequest request) {
-        String url = propriedades.getUsuario().getUrl() + path;
-        
-        if (request.getQueryString() != null) {
-            url += "?" + request.getQueryString();
-        }
+    public Mono<ResponseEntity<Object>> buscar(String id, HttpServletRequest request) {
+        String url = propriedades.getUsuario().getUrl() + "/usuarios/" + id;
 
         return webClient.get()
                 .uri(url)

@@ -13,7 +13,13 @@ import com.syntax.tarefas_service.modelo.entidade.Tarefa;
 @Repository
 public interface TarefaRepositorio extends MongoRepository<Tarefa, String> {
     
+    /**
+     * Busca tarefas por ID do projeto
+     */
     List<Tarefa> findByProjetoId(String projetoId);
     
+    /**
+     * Busca tarefas que contenham um usuário específico na lista de responsáveis
+     */
     List<Tarefa> findByUsuarioIdsContaining(String usuarioId);
 }

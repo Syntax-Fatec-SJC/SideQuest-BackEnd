@@ -5,13 +5,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.api_gateway.service.usuario.AtualizarUsuarioService;
+import com.syntax.api_gateway.service.usuario.ListarUsuariosService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -20,24 +18,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Controller para atualizar usuário via Gateway
+ * Controller para listar usuários via Gateway
  */
 @RestController
 @RequestMapping("/usuarios")
-public class AtualizarUsuarioGatewayController {
+public class ListarUsuariosGatewayController {
 
     @Autowired
-    private AtualizarUsuarioService atualizarUsuarioService;
+    private ListarUsuariosService listarUsuariosService;
 
-    @PutMapping("/{id}")
+    @GetMapping
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> atualizar(@PathVariable String id, @RequestBody Object body, HttpServletRequest request) {
-        return atualizarUsuarioService.atualizar(id, body, request);
+    public Mono<ResponseEntity<Object>> listar(HttpServletRequest request) {
+        return listarUsuariosService.listar(request);
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(String id, Object body, HttpServletRequest request, Exception e) {
+    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
