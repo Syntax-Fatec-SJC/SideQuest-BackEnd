@@ -33,19 +33,19 @@ public class AtualizarResponsaveisTarefaGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> atualizarResponsaveis(
+    public ResponseEntity<Object> atualizarResponsaveis(
             @PathVariable String id,
             @RequestBody Object body, 
             HttpServletRequest request) {
-        return atualizarResponsaveisTarefaService.atualizarResponsaveis(id, body, request);
+        return atualizarResponsaveisTarefaService.atualizarResponsaveis(id, body, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(String id, Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(String id, Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Tarefas Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

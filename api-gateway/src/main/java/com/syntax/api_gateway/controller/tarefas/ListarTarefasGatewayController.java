@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * Controller para listar tarefas via Gateway
  */
 @RestController
-@RequestMapping("/tarefas")
+@RequestMapping("/listar/tarefas")
 public class ListarTarefasGatewayController {
 
     @Autowired
@@ -31,17 +31,17 @@ public class ListarTarefasGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> listar(HttpServletRequest request) {
+    public ResponseEntity<Object> listar(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return listarTarefasService.listar(path, request);
+        return listarTarefasService.listar(path, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Tarefas Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

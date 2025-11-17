@@ -1,44 +1,45 @@
-package com.syntax.api_gateway.controller.projetos;
+package com.syntax.api_gateway.controller.usuario;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.syntax.api_gateway.service.projetos.AtualizarProjetoService;
+import com.syntax.api_gateway.service.usuario.ProximasEntregasService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
-import reactor.core.publisher.Mono;
 
 /**
- * Controller para atualizar projetos via Gateway
+ * Controller para buscar próximas entregas do usuário via Gateway
  */
 @RestController
-@RequestMapping("/atualizar/projetos")
-public class AtualizarProjetoGatewayController {
+@RequestMapping("/usuario")
+public class ProximasEntregasGatewayController {
 
     @Autowired
-    private AtualizarProjetoService atualizarProjetoService;
+    private ProximasEntregasService proximasEntregasService;
 
-    @PutMapping("/**")
+    @GetMapping("/{id}/proximas-entregas")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public ResponseEntity<Object> atualizar(@RequestBody Object body, HttpServletRequest request) {
-        return atualizarProjetoService.atualizar(request.getRequestURI(), body, request).block();
+    public ResponseEntity<Object> buscarProximasEntregas(
+            @PathVariable String id,
+            HttpServletRequest request) {
+        return ResponseEntity.ok(proximasEntregasService.buscarProximasEntregas(id, request).block());
     }
 
-    private ResponseEntity<Object> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(String id, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
-            "erro", "Projetos Service temporariamente indisponível",
+            "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );

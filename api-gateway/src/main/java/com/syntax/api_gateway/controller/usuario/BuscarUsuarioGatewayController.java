@@ -32,16 +32,16 @@ public class BuscarUsuarioGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> buscar(@PathVariable String id, HttpServletRequest request) {
-        return buscarUsuarioService.buscar(id, request);
+    public ResponseEntity<Object> buscar(@PathVariable String id, HttpServletRequest request) {
+        return buscarUsuarioService.buscar(id, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(String id, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(String id, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.syntax.api_gateway.configuracao.PropriedadesMicroservicos;
+import com.syntax.api_gateway.util.HeaderPropagador;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
@@ -22,20 +23,21 @@ public class MembroProjetoService {
     private PropriedadesMicroservicos propriedades;
 
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
 
     /**
      * Adiciona um membro ao projeto
      */
     public Mono<ResponseEntity<Object>> adicionarMembro(String projetoId, Object body, HttpServletRequest request) {
         String url = propriedades.getProjetos().getUrl() + "/projetos/" + projetoId + "/membros";
+        HeaderPropagador headers = HeaderPropagador.extrairDe(request);
 
-        return webClient.post()
+        return webClientBuilder.build().post()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
-                .header("X-User-Id", request.getHeader("X-User-Id"))
-                .header("X-User-Email", request.getHeader("X-User-Email"))
-                .header("X-Gateway-Secret", request.getHeader("X-Gateway-Secret"))
+                .header("X-User-Id", headers.getUserId())
+                .header("X-User-Email", headers.getUserEmail())
+                .header("X-Gateway-Secret", headers.getGatewaySecret())
                 .bodyValue(body != null ? body : Collections.emptyMap())
                 .retrieve()
                 .toEntity(Object.class);
@@ -46,13 +48,14 @@ public class MembroProjetoService {
      */
     public Mono<ResponseEntity<Object>> listarMembros(String projetoId, HttpServletRequest request) {
         String url = propriedades.getProjetos().getUrl() + "/projetos/" + projetoId + "/membros";
+        HeaderPropagador headers = HeaderPropagador.extrairDe(request);
 
-        return webClient.get()
+        return webClientBuilder.build().get()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
-                .header("X-User-Id", request.getHeader("X-User-Id"))
-                .header("X-User-Email", request.getHeader("X-User-Email"))
-                .header("X-Gateway-Secret", request.getHeader("X-Gateway-Secret"))
+                .header("X-User-Id", headers.getUserId())
+                .header("X-User-Email", headers.getUserEmail())
+                .header("X-Gateway-Secret", headers.getGatewaySecret())
                 .retrieve()
                 .toEntity(Object.class);
     }
@@ -62,13 +65,14 @@ public class MembroProjetoService {
      */
     public Mono<ResponseEntity<Object>> removerMembro(String projetoId, String usuarioId, HttpServletRequest request) {
         String url = propriedades.getProjetos().getUrl() + "/projetos/" + projetoId + "/membros/" + usuarioId;
+        HeaderPropagador headers = HeaderPropagador.extrairDe(request);
 
-        return webClient.delete()
+        return webClientBuilder.build().delete()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
-                .header("X-User-Id", request.getHeader("X-User-Id"))
-                .header("X-User-Email", request.getHeader("X-User-Email"))
-                .header("X-Gateway-Secret", request.getHeader("X-Gateway-Secret"))
+                .header("X-User-Id", headers.getUserId())
+                .header("X-User-Email", headers.getUserEmail())
+                .header("X-Gateway-Secret", headers.getGatewaySecret())
                 .retrieve()
                 .toEntity(Object.class);
     }

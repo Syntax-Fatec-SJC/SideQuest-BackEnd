@@ -2,11 +2,6 @@ package com.syntax.api_gateway.seguranca;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
@@ -103,46 +97,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        // Cria wrapper para adicionar headers customizados que serão propagados aos microserviços
-        HttpServletRequestWrapper wrappedRequest = new HttpServletRequestWrapper(request) {
-            private Map<String, String> customHeaders = new HashMap<>();
+        // Adiciona headers como atributos do request para serem propagados aos microserviços
+        request.setAttribute("X-User-Id", finalUserId);
+        request.setAttribute("X-User-Email", finalEmail);
+        request.setAttribute("X-Gateway-Secret", GATEWAY_SECRET);
 
-            {
-                customHeaders.put("X-User-Id", finalUserId);
-                customHeaders.put("X-User-Email", finalEmail);
-                customHeaders.put("X-Gateway-Secret", GATEWAY_SECRET);
-            }
-
-            @Override
-            public String getHeader(String name) {
-                String headerValue = customHeaders.get(name);
-                if (headerValue != null) {
-                    return headerValue;
-                }
-                return super.getHeader(name);
-            }
-
-            @Override
-            public Enumeration<String> getHeaderNames() {
-                Set<String> set = new HashSet<>(customHeaders.keySet());
-                Enumeration<String> e = super.getHeaderNames();
-                while (e.hasMoreElements()) {
-                    set.add(e.nextElement());
-                }
-                return Collections.enumeration(set);
-            }
-
-            @Override
-            public Enumeration<String> getHeaders(String name) {
-                String headerValue = customHeaders.get(name);
-                if (headerValue != null) {
-                    return Collections.enumeration(Collections.singletonList(headerValue));
-                }
-                return super.getHeaders(name);
-            }
-        };
-
-        filterChain.doFilter(wrappedRequest, response);
+        filterChain.doFilter(request, response);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.syntax.api_gateway.service.projetos;
+package com.syntax.api_gateway.service.tarefas;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 /**
- * Service responsável por atualizar projetos no Projetos Service
+ * Service responsável por listar tarefas de um projeto do Tarefas Service
  */
 @Service
-public class AtualizarProjetoService {
+public class TarefasProjetoService {
 
     @Autowired
     private PropriedadesMicroservicos propriedades;
@@ -24,19 +24,19 @@ public class AtualizarProjetoService {
     private WebClient.Builder webClientBuilder;
 
     /**
-     * Realiza requisição PUT para atualizar projeto
+     * Lista as tarefas de um projeto específico
      */
-    public Mono<ResponseEntity<Object>> atualizar(String path, Object body, HttpServletRequest request) {
-        String url = propriedades.getProjetos().getUrl() + path;
+    public Mono<ResponseEntity<Object>> listarTarefasDoProjeto(String projetoId, HttpServletRequest request) {
+        String url = propriedades.getTarefas().getUrl() + "/projetos/" + projetoId + "/tarefas";
+
         HeaderPropagador headers = HeaderPropagador.extrairDe(request);
 
-        return webClientBuilder.build().put()
+        return webClientBuilder.build().get()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
                 .header("X-User-Id", headers.getUserId())
                 .header("X-User-Email", headers.getUserEmail())
                 .header("X-Gateway-Secret", headers.getGatewaySecret())
-                .bodyValue(body)
                 .retrieve()
                 .toEntity(Object.class);
     }

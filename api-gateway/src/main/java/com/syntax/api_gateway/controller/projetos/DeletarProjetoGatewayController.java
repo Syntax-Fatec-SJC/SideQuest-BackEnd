@@ -15,13 +15,12 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
-import reactor.core.publisher.Mono;
 
 /**
  * Controller para deletar projetos via Gateway
  */
 @RestController
-@RequestMapping("/deletar/projetos")
+@RequestMapping("/excluir/projetos")
 public class DeletarProjetoGatewayController {
 
         @Autowired
@@ -31,16 +30,16 @@ public class DeletarProjetoGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> deletar(HttpServletRequest request) {
-        return deletarProjetoService.deletar(request.getRequestURI(), request);
+    public ResponseEntity<Object> deletar(HttpServletRequest request) {
+        return deletarProjetoService.deletar(request.getRequestURI(), request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Projetos Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

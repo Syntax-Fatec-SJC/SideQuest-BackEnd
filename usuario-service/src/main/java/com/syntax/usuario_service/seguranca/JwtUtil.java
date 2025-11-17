@@ -15,8 +15,8 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    // Deve ser a mesma chave do API Gateway
-    private static final String SECRET_KEY = "SideQuestSecretKey2024SecurityKeyForJWTTokenGenerationAndValidation";
+    // Deve ser a mesma chave do API Gateway (em Base64)
+    private static final String SECRET_KEY = "U2lkZVF1ZXN0U2VjcmV0S2V5MjAyNFNlY3VyaXR5S2V5Rm9ySldUVG9rZW5HZW5lcmF0aW9uQW5kVmFsaWRhdGlvbg==";
 
     // Gera o token JWT com email e userId
     public String generateToken(String email, String userId) {

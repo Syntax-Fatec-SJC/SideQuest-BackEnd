@@ -33,16 +33,16 @@ public class AtualizarUsuarioGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> atualizar(@PathVariable String id, @RequestBody Object body, HttpServletRequest request) {
-        return atualizarUsuarioService.atualizar(id, body, request);
+    public ResponseEntity<Object> atualizar(@PathVariable String id, @RequestBody Object body, HttpServletRequest request) {
+        return atualizarUsuarioService.atualizar(id, body, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(String id, Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(String id, Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

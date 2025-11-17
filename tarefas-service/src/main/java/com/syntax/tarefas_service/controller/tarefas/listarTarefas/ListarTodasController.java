@@ -21,7 +21,7 @@ public class ListarTodasController {
     @Autowired
     private ListarTodasService listarTodasService;
 
-    @GetMapping("/tarefas")
+    @GetMapping("/listar/tarefas")
     public ResponseEntity<List<TarefaDTO>> listarTodas() {
         return ResponseEntity.ok(listarTodasService.executar());
     }

@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * Controller para listar usuários via Gateway
  */
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/listar/usuarios")
 public class ListarUsuariosGatewayController {
 
     @Autowired
@@ -31,16 +31,16 @@ public class ListarUsuariosGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> listar(HttpServletRequest request) {
-        return listarUsuariosService.listar(request);
+    public ResponseEntity<Object> listar(HttpServletRequest request) {
+        return listarUsuariosService.listar(request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Usuario Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

@@ -39,6 +39,14 @@ public class GatewayAuthenticationFilter implements Filter {
         
         String path = httpRequest.getRequestURI();
         
+        // DEBUG: Log all headers
+        logger.info("🔍 [GatewayAuthenticationFilter] Path: {}", path);
+        java.util.Enumeration<String> headerNames = httpRequest.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            logger.info("   Received Header: {} = {}", headerName, httpRequest.getHeader(headerName));
+        }
+        
         // Permite endpoints públicos (health, swagger, login, cadastrar)
         if (isPublicEndpoint(path)) {
             // Endpoints públicos ainda devem ter X-Gateway-Secret para garantir que vem do Gateway
@@ -99,6 +107,7 @@ public class GatewayAuthenticationFilter implements Filter {
     private boolean isPublicEndpoint(String path) {
         return path.equals("/login") ||
                path.equals("/cadastrar") ||
+               path.startsWith("/internal/") || // Endpoints internos entre serviços
                path.contains("/actuator") || 
                path.contains("/swagger") || 
                path.contains("/api-docs") ||

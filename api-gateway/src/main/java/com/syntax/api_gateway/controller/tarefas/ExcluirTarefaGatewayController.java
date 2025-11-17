@@ -31,17 +31,17 @@ public class ExcluirTarefaGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> excluir(HttpServletRequest request) {
+    public ResponseEntity<Object> excluir(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return excluirTarefaService.excluir(path, request);
+        return excluirTarefaService.excluir(path, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Tarefas Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

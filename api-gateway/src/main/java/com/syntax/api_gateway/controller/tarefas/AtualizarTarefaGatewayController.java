@@ -33,35 +33,35 @@ public class AtualizarTarefaGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> atualizar(@RequestBody Object body, HttpServletRequest request) {
+    public ResponseEntity<Object> atualizar(@RequestBody Object body, HttpServletRequest request) {
         String path = request.getRequestURI();
-        return atualizarTarefaService.atualizarCompleto(path, body, request);
+        return atualizarTarefaService.atualizarCompleto(path, body, request).block();
     }
 
     @PatchMapping("/**")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponsePatch")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> atualizarParcial(@RequestBody Object body, HttpServletRequest request) {
+    public ResponseEntity<Object> atualizarParcial(@RequestBody Object body, HttpServletRequest request) {
         String path = request.getRequestURI();
-        return atualizarTarefaService.atualizarParcial(path, body, request);
+        return atualizarTarefaService.atualizarParcial(path, body, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Tarefas Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponsePatch(Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponsePatch(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Tarefas Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

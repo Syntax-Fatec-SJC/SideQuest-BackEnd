@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.syntax.api_gateway.configuracao.PropriedadesMicroservicos;
+import com.syntax.api_gateway.util.HeaderPropagador;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
@@ -22,20 +23,21 @@ public class AtualizarResponsaveisTarefaService {
     private PropriedadesMicroservicos propriedades;
 
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
 
     /**
      * Realiza requisição PATCH para atualizar responsáveis da tarefa
      */
     public Mono<ResponseEntity<Object>> atualizarResponsaveis(String id, Object body, HttpServletRequest request) {
         String url = propriedades.getTarefas().getUrl() + "/tarefas/" + id + "/responsaveis";
+        HeaderPropagador headers = HeaderPropagador.extrairDe(request);
 
-        return webClient.patch()
+        return webClientBuilder.build().patch()
                 .uri(url)
                 .header("Authorization", request.getHeader("Authorization"))
-                .header("X-User-Id", request.getHeader("X-User-Id"))
-                .header("X-User-Email", request.getHeader("X-User-Email"))
-                .header("X-Gateway-Secret", request.getHeader("X-Gateway-Secret"))
+                .header("X-User-Id", headers.getUserId())
+                .header("X-User-Email", headers.getUserEmail())
+                .header("X-Gateway-Secret", headers.getGatewaySecret())
                 .bodyValue(body != null ? body : Collections.emptyMap())
                 .retrieve()
                 .toEntity(Object.class);

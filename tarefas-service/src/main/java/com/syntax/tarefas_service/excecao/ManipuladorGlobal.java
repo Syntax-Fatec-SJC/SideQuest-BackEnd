@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,6 +22,8 @@ import com.syntax.tarefas_service.modelo.dto.RespostaDTO.ErroRespostaDTO;
  */
 @RestControllerAdvice
 public class ManipuladorGlobal {
+
+    private static final Logger logger = LoggerFactory.getLogger(ManipuladorGlobal.class);
 
     /**
      * Trata erros de validação de campos
@@ -93,6 +97,7 @@ public class ManipuladorGlobal {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroRespostaDTO> handleGenericException(Exception ex) {
+        logger.error("❌ Erro não tratado: {}", ex.getMessage(), ex);
         ErroRespostaDTO erro = new ErroRespostaDTO(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "Erro Interno do Servidor",

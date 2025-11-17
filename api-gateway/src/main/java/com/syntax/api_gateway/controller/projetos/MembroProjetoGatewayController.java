@@ -35,49 +35,49 @@ public class MembroProjetoGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> adicionarMembro(
+    public ResponseEntity<Object> adicionarMembro(
             @PathVariable String projetoId,
             @RequestBody Object body, 
             HttpServletRequest request) {
-        return membroProjetoService.adicionarMembro(projetoId, body, request);
+        return membroProjetoService.adicionarMembro(projetoId, body, request).block();
     }
 
     @GetMapping("/{projetoId}/membros")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponseSemBody")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> listarMembros(
+    public ResponseEntity<Object> listarMembros(
             @PathVariable String projetoId,
             HttpServletRequest request) {
-        return membroProjetoService.listarMembros(projetoId, request);
+        return membroProjetoService.listarMembros(projetoId, request).block();
     }
 
     @DeleteMapping("/{projetoId}/membros/{usuarioId}")
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponseSemBody")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> removerMembro(
+    public ResponseEntity<Object> removerMembro(
             @PathVariable String projetoId,
             @PathVariable String usuarioId,
             HttpServletRequest request) {
-        return membroProjetoService.removerMembro(projetoId, usuarioId, request);
+        return membroProjetoService.removerMembro(projetoId, usuarioId, request).block();
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponse(String projetoId, Object body, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponse(String projetoId, Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Projetos Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
-    private Mono<ResponseEntity<Object>> fallbackResponseSemBody(String projetoId, HttpServletRequest request, Exception e) {
+    private ResponseEntity<Object> fallbackResponseSemBody(String projetoId, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Projetos Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

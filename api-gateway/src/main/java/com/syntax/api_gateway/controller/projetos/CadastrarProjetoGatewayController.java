@@ -16,7 +16,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
-import reactor.core.publisher.Mono;
 
 /**
  * Controller para cadastrar projetos via Gateway
@@ -32,14 +31,16 @@ public class CadastrarProjetoGatewayController {
     @CircuitBreaker(name = "default", fallbackMethod = "fallbackResponse")
     @RateLimiter(name = "default")
     @Retry(name = "default")
-    public Mono<ResponseEntity<Object>> cadastrar(@RequestBody Object body, HttpServletRequest request) {
-        return cadastrarProjetoService.cadastrar(request.getRequestURI(), body, request);
-    }    private Mono<ResponseEntity<Object>> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
+    public ResponseEntity<Object> cadastrar(@RequestBody Object body, HttpServletRequest request) {
+        return cadastrarProjetoService.cadastrar(request.getRequestURI(), body, request).block();
+    }
+
+    private ResponseEntity<Object> fallbackResponse(Object body, HttpServletRequest request, Exception e) {
         Map<String, String> error = Map.of(
             "erro", "Projetos Service temporariamente indisponível",
             "mensagem", "Tente novamente em alguns instantes",
             "detalhes", e.getMessage()
         );
-        return Mono.just(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error));
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 }

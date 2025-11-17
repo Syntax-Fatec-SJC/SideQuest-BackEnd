@@ -22,7 +22,7 @@ public class LoginCadastrarUsuarioService {
     private PropriedadesMicroservicos propriedades;
 
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
     
     private static final String GATEWAY_SECRET = "SideQuestGatewaySecret2024";
 
@@ -31,9 +31,11 @@ public class LoginCadastrarUsuarioService {
      * Nota: Endpoints públicos não têm JWT, mas ainda precisam do X-Gateway-Secret
      */
     public Mono<ResponseEntity<Object>> processar(String path, Object body, HttpServletRequest request) {
-        String url = propriedades.getUsuario().getUrl() + path;
+        // Remove o prefixo /usuario/ do path, pois o microsserviço espera apenas /login ou /cadastrar
+        String targetPath = path.replace("/usuario", "");
+        String url = propriedades.getUsuario().getUrl() + targetPath;
 
-        return webClient.post()
+        return webClientBuilder.build().post()
                 .uri(url)
                 .header("X-Gateway-Secret", GATEWAY_SECRET)
                 .bodyValue(body != null ? body : Collections.emptyMap())

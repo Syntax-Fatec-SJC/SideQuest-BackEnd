@@ -40,7 +40,7 @@ public class HealthCheckController {
     }
 
     @GetMapping("/services")
-    public Mono<ResponseEntity<Map<String, Object>>> checkServices() {
+    public ResponseEntity<Map<String, Object>> checkServices() {
         Map<String, Object> servicesStatus = new HashMap<>();
         servicesStatus.put("timestamp", LocalDateTime.now());
         
@@ -78,7 +78,8 @@ public class HealthCheckController {
                 servicesStatus.put("gateway-status", "UP");
                 servicesStatus.put("error", "Erro ao verificar serviços: " + e.getMessage());
                 return Mono.just(ResponseEntity.status(503).body(servicesStatus));
-            });
+            })
+            .block();
     }
 
     private Mono<String> checkServiceHealth(String baseUrl) {

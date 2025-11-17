@@ -15,7 +15,7 @@ import com.syntax.usuario_service.modelo.entidade.Usuario;
 import com.syntax.usuario_service.service.usuario.ListarUsuarioService;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/listar/usuarios")
 public class ListarController {
     
     @Autowired

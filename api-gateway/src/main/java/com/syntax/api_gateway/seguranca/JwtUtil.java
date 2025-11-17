@@ -18,8 +18,8 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    // DEVE SER IGUAL ao Usuario-Service
-    private static final String SECRET_KEY = "SideQuestSecretKey2024SecurityKeyForJWTTokenGenerationAndValidation";
+    // DEVE SER IGUAL ao Usuario-Service (em Base64)
+    private static final String SECRET_KEY = "U2lkZVF1ZXN0U2VjcmV0S2V5MjAyNFNlY3VyaXR5S2V5Rm9ySldUVG9rZW5HZW5lcmF0aW9uQW5kVmFsaWRhdGlvbg==";
 
     /**
      * Obtém a chave secreta para validação do JWT

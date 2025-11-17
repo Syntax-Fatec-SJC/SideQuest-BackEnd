@@ -23,9 +23,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 /**
  * Controller para listar as próximas entregas de tarefas do usuário autenticado
  */
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 @RestController
-@RequestMapping("/api/tarefas")
+@RequestMapping("/listar/tarefas")
 @Tag(name = "Tarefas", description = "Endpoints para gerenciamento de tarefas")
 public class ListarProximasEntregasController {
 
