@@ -16,8 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 /**
- * Controller para cadastrar projetos
- * Usa userId propagado pelo API Gateway via headers
+ * Controller para cadastrar projetos Usa userId propagado pelo API Gateway via
+ * headers
  */
 @RestController
 public class CadastrarProjetoController {
@@ -31,15 +31,15 @@ public class CadastrarProjetoController {
     public ResponseEntity<ProjetoDTO> cadastrar(
             @Valid @RequestBody ProjetoDTO dto,
             HttpServletRequest request) {
-        
+
         // Extrai userId do header propagado pelo Gateway (validado no filtro)
         String usuarioId = (String) request.getAttribute("userId");
         String userEmail = (String) request.getAttribute("userEmail");
-        
-        logger.info("📝 Cadastrando projeto para usuário: {} ({})", userEmail, usuarioId);
-        
+
+        logger.info("Cadastrando projeto para usuário: {} ({})", userEmail, usuarioId);
+
         ProjetoDTO resultado = service.executar(dto, usuarioId);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
     }
 }
