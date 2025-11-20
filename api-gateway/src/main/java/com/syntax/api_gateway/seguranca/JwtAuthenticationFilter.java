@@ -82,10 +82,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Extrai informações do usuário
         String userId = jwtUtil.extractUserId(jwt);
+        String nome = jwtUtil.extractNome(jwt);
         final String finalEmail = email;
         final String finalUserId = userId;
+        final String finalNome = nome;
 
-        logger.info("✅ Token válido - User: {} ({})", finalEmail, finalUserId);
+        logger.info("✅ Token válido - User: {} ({}) - Nome: {}", finalEmail, finalUserId, finalNome);
 
         // Cria autenticação no contexto Spring Security
         UsernamePasswordAuthenticationToken authenticationToken = 
@@ -100,6 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Adiciona headers como atributos do request para serem propagados aos microserviços
         request.setAttribute("X-User-Id", finalUserId);
         request.setAttribute("X-User-Email", finalEmail);
+        request.setAttribute("X-User-Name", finalNome);
         request.setAttribute("X-Gateway-Secret", GATEWAY_SECRET);
 
         filterChain.doFilter(request, response);

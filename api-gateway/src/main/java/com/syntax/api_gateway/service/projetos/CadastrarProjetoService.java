@@ -43,6 +43,7 @@ public class CadastrarProjetoService {
                 .header("Authorization", request.getHeader("Authorization"))
                 .header("X-User-Id", headers.getUserId())
                 .header("X-User-Email", headers.getUserEmail())
+                .header("X-User-Name", headers.getUserName())
                 .header("X-Gateway-Secret", headers.getGatewaySecret())
                 .bodyValue(body != null ? body : Collections.emptyMap())
                 .retrieve()
