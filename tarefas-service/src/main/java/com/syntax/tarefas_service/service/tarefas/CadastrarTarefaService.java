@@ -53,8 +53,8 @@ public class CadastrarTarefaService {
             logger.warn("[CadastrarTarefaService] RequestContextHolder retornou null");
         }
 
-        // --- Busca projeto no Projetos-Service ---
-        ProjetoDTO projeto = projetosClient.buscarProjeto(dto.getProjetoId(), userId, userEmail);
+        // --- Busca projeto no Projetos-Service (CORRIGIDO) ---
+        ProjetoDTO projeto = projetosClient.buscarProjeto(dto.getProjetoId());
 
         // --- Validação de usuários da tarefa ---
         List<String> usuarioIds = normalizarLista(dto.getUsuarioIds());
