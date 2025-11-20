@@ -9,9 +9,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-/**
- * Configuração de CORS para o API Gateway
- */
 @Configuration
 public class CorsConfig {
 
@@ -30,10 +27,11 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        
+
         config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         config.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
         config.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+
         config.setAllowCredentials(allowCredentials);
         config.setMaxAge(3600L);
 

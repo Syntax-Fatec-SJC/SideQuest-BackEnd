@@ -13,7 +13,6 @@ import com.syntax.lixeira_service.service.LixeiraService;
 
 @RestController
 @RequestMapping("/api/lixeira")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 public class LixeiraController {
 
     @Autowired

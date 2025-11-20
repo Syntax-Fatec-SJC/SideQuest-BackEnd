@@ -2,7 +2,6 @@ package com.syntax.tarefas_service.controller.tarefas;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import com.syntax.tarefas_service.service.tarefas.RestaurarTarefaService;
 
 @RestController
 @RequestMapping("/tarefas/lixeira")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 public class RestaurarTarefaController {
 
     @Autowired
