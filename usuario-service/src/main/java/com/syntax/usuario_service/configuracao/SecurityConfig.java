@@ -8,9 +8,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Configuração de segurança SIMPLIFICADA
- * - Login e Cadastro são públicos (geram token)
- * - Outros endpoints confiam no API Gateway (que já validou o JWT)
+ * Configuração de segurança SIMPLIFICADA - Login e Cadastro são públicos (geram
+ * token) - Outros endpoints confiam no API Gateway (que já validou o JWT)
+ *
+ * IMPORTANTE: CORS é gerenciado APENAS pelo API Gateway! Este microserviço NÃO
+ * deve ter configuração de CORS.
  */
 @Configuration
 @EnableWebSecurity
@@ -19,20 +21,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> {}) // Usa CorsConfig
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable())
+                // ❌ REMOVIDO: .cors(cors -> {}) - CORS agora é apenas no Gateway
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (geram token)
                 .requestMatchers("/login", "/cadastrar").permitAll()
-                
                 // Swagger/Health (monitoramento)
                 .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                
                 // Outros endpoints: confia no Gateway (que já validou JWT)
                 .anyRequest().permitAll()
-            );
-        
+                );
+
         return http.build();
     }
 }

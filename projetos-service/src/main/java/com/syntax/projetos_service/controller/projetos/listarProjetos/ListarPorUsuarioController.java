@@ -12,7 +12,8 @@ import com.syntax.projetos_service.modelo.dto.projetoDTO.ProjetoDTO;
 import com.syntax.projetos_service.service.projetos.listarProjetos.ListarPorUsuarioService;
 
 /**
- * Controller para listar projetos por usuário
+ * Controller para listar projetos por usuário Suporta ambas as rotas (antiga e
+ * nova) para compatibilidade
  */
 @RestController
 public class ListarPorUsuarioController {
@@ -20,8 +21,21 @@ public class ListarPorUsuarioController {
     @Autowired
     private ListarPorUsuarioService service;
 
+    /**
+     * Rota ANTIGA (mantida para compatibilidade) GET /listar/projetos/meus
+     */
     @GetMapping("/listar/projetos/meus")
     public ResponseEntity<List<ProjetoDTO>> listarPorUsuario(
+            @RequestHeader("X-User-Id") String usuarioId) {
+        List<ProjetoDTO> projetos = service.executar(usuarioId);
+        return ResponseEntity.ok(projetos);
+    }
+
+    /**
+     * Rota NOVA (usada pelo frontend atualizado) GET /projetos/meus
+     */
+    @GetMapping("/projetos/meus")
+    public ResponseEntity<List<ProjetoDTO>> listarMeusProjetos(
             @RequestHeader("X-User-Id") String usuarioId) {
         List<ProjetoDTO> projetos = service.executar(usuarioId);
         return ResponseEntity.ok(projetos);

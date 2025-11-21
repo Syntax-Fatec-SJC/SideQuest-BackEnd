@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.syntax.projetos_service.modelo.Projeto;
+import com.syntax.projetos_service.modelo.entidade.Projeto;
 import com.syntax.projetos_service.repositorio.ProjetoRepositorio;
 
 /**

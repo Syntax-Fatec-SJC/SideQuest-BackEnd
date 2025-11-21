@@ -11,7 +11,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Configuração de segurança do API Gateway - Login e cadastro são PÚBLICOS -
- * Todos os outros endpoints são PROTEGIDOS
+ * Todos os outros endpoints são PROTEGIDOS - CORS habilitado (usa configuração
+ * do CorsConfig.java)
  */
 @Configuration
 @EnableWebSecurity
@@ -24,6 +25,9 @@ public class SegurancaConfiguracao {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                // ✅ ADICIONE ESTA LINHA - HABILITA CORS
+                .cors(cors -> {
+                }) // Usa a configuração do CorsConfig.java
                 .sessionManagement(session
                         -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
