@@ -18,11 +18,12 @@ public class JwtUtil {
     // Deve ser a mesma chave do API Gateway (em Base64)
     private static final String SECRET_KEY = "U2lkZVF1ZXN0U2VjcmV0S2V5MjAyNFNlY3VyaXR5S2V5Rm9ySldUVG9rZW5HZW5lcmF0aW9uQW5kVmFsaWRhdGlvbg==";
 
-    // Gera o token JWT com email e userId
-    public String generateToken(String email, String userId) {
+    // Gera o token JWT com email, userId e nome
+    public String generateToken(String email, String userId, String nome) {
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
+                .claim("nome", nome)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
                 .signWith(getSignKey())
@@ -50,6 +51,11 @@ public class JwtUtil {
     // Extrai o userId do token
     public String extractUserId(String token) {
         return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
+
+    // Extrai o nome do token
+    public String extractNome(String token) {
+        return extractClaim(token, claims -> claims.get("nome", String.class));
     }
 
     // Extrai uma claim específica do token

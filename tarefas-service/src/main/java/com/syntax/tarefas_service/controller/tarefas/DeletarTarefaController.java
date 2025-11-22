@@ -20,8 +20,14 @@ public class DeletarTarefaController {
     private DeletarTarefaService deletarTarefaService;
 
     @DeleteMapping("/excluir/tarefas/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable String id) {
-        deletarTarefaService.executar(id);
+    public ResponseEntity<Void> excluir(
+            @PathVariable String id,
+            jakarta.servlet.http.HttpServletRequest request) {
+        
+        String autorId = (String) request.getAttribute("userId");
+        String autorNome = (String) request.getAttribute("userName");
+        
+        deletarTarefaService.executar(id, autorId, autorNome);
         return ResponseEntity.noContent().build();
     }
 }

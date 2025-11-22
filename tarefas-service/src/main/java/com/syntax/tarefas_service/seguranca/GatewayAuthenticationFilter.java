@@ -29,6 +29,8 @@ public class GatewayAuthenticationFilter implements Filter {
     private static final String GATEWAY_SECRET = "SideQuestGatewaySecret2024";
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_EMAIL_HEADER = "X-User-Email";
+    private static final String USER_NAME_HEADER = "X-User-Name";
+    
     
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -62,9 +64,13 @@ public class GatewayAuthenticationFilter implements Filter {
         // Extrai informações do usuário dos headers
         String userId = httpRequest.getHeader(USER_ID_HEADER);
         String userEmail = httpRequest.getHeader(USER_EMAIL_HEADER);
+        String userName = httpRequest.getHeader(USER_NAME_HEADER);
+        
+        logger.info("🔍 DEBUG HEADERS - Path: {}, X-Gateway-Secret: {}, X-User-Id: {}, X-User-Email: {}, X-User-Name: {}", 
+            path, (gatewaySecret != null ? "presente" : "ausente"), userId, userEmail, userName);
         
         if (userId == null || userEmail == null) {
-            logger.warn("⚠️ Headers de autenticação ausentes: {}", path);
+            logger.warn("⚠️ Headers de autenticação ausentes: {} - userId: {}, userEmail: {}", path, userId, userEmail);
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.setContentType("application/json");
             httpResponse.getWriter().write("{\"erro\":\"Usuário não autenticado\"}");
@@ -74,8 +80,9 @@ public class GatewayAuthenticationFilter implements Filter {
         // Adiciona ao request para uso nos controllers
         httpRequest.setAttribute("userId", userId);
         httpRequest.setAttribute("userEmail", userEmail);
+        httpRequest.setAttribute("userName", userName);
         
-        logger.debug("✅ Requisição autenticada via Gateway - User: {} ({})", userEmail, userId);
+        logger.debug("✅ Requisição autenticada via Gateway - User: {} ({}) - Nome: {}", userEmail, userId, userName);
         
         chain.doFilter(request, response);
     }

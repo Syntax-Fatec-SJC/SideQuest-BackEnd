@@ -78,4 +78,11 @@ public class JwtUtil {
     public String extractUserId(String token) {
         return extractAllClaims(token).get("userId", String.class);
     }
+
+    /**
+     * Extrai o nome do usuário do token
+     */
+    public String extractNome(String token) {
+        return extractAllClaims(token).get("nome", String.class);
+    }
 }
