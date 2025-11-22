@@ -11,6 +11,7 @@ public class PropriedadesMicroservicos {
     private Servico usuario = new Servico();
     private Servico projetos = new Servico();
     private Servico tarefas = new Servico();
+    private Servico avisos = new Servico();
 
     public static class Servico {
         private String url;
@@ -46,5 +47,13 @@ public class PropriedadesMicroservicos {
 
     public void setTarefas(Servico tarefas) {
         this.tarefas = tarefas;
+    }
+
+    public Servico getAvisos() {
+        return avisos;
+    }
+
+    public void setAvisos(Servico avisos) {
+        this.avisos = avisos;
     }
 }

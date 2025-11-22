@@ -25,9 +25,13 @@ public class AdicionarMembroProjetoController {
     @PostMapping("/projetos/{projetoId}/membros")
     public ResponseEntity<ProjetoDTO> adicionarMembro(
             @PathVariable String projetoId,
-            @Valid @RequestBody MembroProjetoDTO dto) {
+            @Valid @RequestBody MembroProjetoDTO dto,
+            jakarta.servlet.http.HttpServletRequest request) {
         
-        ProjetoDTO resultado = service.executar(projetoId, dto);
+        String autorId = (String) request.getAttribute("userId");
+        String autorNome = (String) request.getAttribute("userName");
+        
+        ProjetoDTO resultado = service.executar(projetoId, dto, autorId, autorNome);
         return ResponseEntity.ok(resultado);
     }
 }

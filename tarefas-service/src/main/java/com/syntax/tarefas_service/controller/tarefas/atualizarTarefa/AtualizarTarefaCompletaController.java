@@ -24,8 +24,15 @@ public class AtualizarTarefaCompletaController {
     private AtualizarTarefaCompletaService service;
 
     @PutMapping("/atualizar/tarefas/{id}")
-    public ResponseEntity<TarefaDTO> atualizar(@PathVariable String id, @Valid @RequestBody TarefaDTO dto) {
-        TarefaDTO atualizada = service.executar(id, dto);
+    public ResponseEntity<TarefaDTO> atualizar(
+            @PathVariable String id, 
+            @Valid @RequestBody TarefaDTO dto,
+            jakarta.servlet.http.HttpServletRequest request) {
+        
+        String autorId = (String) request.getAttribute("userId");
+        String autorNome = (String) request.getAttribute("userName");
+        
+        TarefaDTO atualizada = service.executar(id, dto, autorId, autorNome);
         return ResponseEntity.ok(atualizada);
     }
 }

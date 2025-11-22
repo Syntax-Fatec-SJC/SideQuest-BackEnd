@@ -18,8 +18,11 @@ public class DeletarProjetoController {
     private DeletarProjetoService service;
 
     @DeleteMapping("/excluir/projetos/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable String id) {
-        service.executar(id);
+    public ResponseEntity<Void> deletar(
+            @PathVariable String id,
+            @org.springframework.web.bind.annotation.RequestHeader(value = "X-User-Id", required = false) String autorId,
+            @org.springframework.web.bind.annotation.RequestHeader(value = "X-User-Name", required = false) String autorNome) {
+        service.executar(id, autorId, autorNome);
         return ResponseEntity.noContent().build();
     }
 }
