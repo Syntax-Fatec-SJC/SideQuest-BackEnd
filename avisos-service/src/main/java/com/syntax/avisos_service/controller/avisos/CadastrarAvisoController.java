@@ -3,7 +3,6 @@ package com.syntax.avisos_service.controller.avisos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +15,6 @@ import jakarta.validation.Valid;
 /**
  * Controller para cadastrar novo aviso
  */
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
 @RestController
 public class CadastrarAvisoController {
 

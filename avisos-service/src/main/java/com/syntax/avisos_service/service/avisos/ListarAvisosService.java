@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.syntax.avisos_service.modelo.conversor.ConversorAvisoDTO;
+import com.syntax.avisos_service.modelo.conversor.ConversorAviso;
 import com.syntax.avisos_service.modelo.dto.avisoDTO.AvisoDTO;
 import com.syntax.avisos_service.modelo.entidade.Aviso;
 import com.syntax.avisos_service.repositorio.AvisoRepositorio;
@@ -35,7 +35,7 @@ public class ListarAvisosService {
         logger.info("✅ {} avisos encontrados", avisos.size());
         
         return avisos.stream()
-                .map(ConversorAvisoDTO::converterParaDTO)
+                .map(ConversorAviso::converterParaDTO)
                 .collect(Collectors.toList());
     }
     
@@ -50,7 +50,7 @@ public class ListarAvisosService {
         logger.info("✅ {} avisos não visualizados encontrados", avisos.size());
         
         return avisos.stream()
-                .map(ConversorAvisoDTO::converterParaDTO)
+                .map(ConversorAviso::converterParaDTO)
                 .collect(Collectors.toList());
     }
 }
