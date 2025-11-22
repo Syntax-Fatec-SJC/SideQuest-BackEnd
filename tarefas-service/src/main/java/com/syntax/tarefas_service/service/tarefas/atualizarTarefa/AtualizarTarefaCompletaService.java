@@ -96,13 +96,25 @@ public class AtualizarTarefaCompletaService {
                     for (String membroId : usuarioIds) {
                         if (membroId.equals(membroAdicionadoId)) {
                             // Aviso para o próprio membro que foi adicionado
-                            avisosClient.criarAvisoNovaTarefa(
-                                salvo.getId(), 
-                                salvo.getProjetoId(), 
-                                membroId, 
-                                autorId,
-                                autorNome
-                            );
+                            if (membroAdicionadoId.equals(autorId)) {
+                                // Se o autor se adicionou, mostra como edição
+                                avisosClient.criarAvisoTarefaEditada(
+                                    salvo.getId(), 
+                                    salvo.getProjetoId(), 
+                                    membroId, 
+                                    autorId,
+                                    autorNome
+                                );
+                            } else {
+                                // Se foi adicionado por outro usuário, mostra como atribuição
+                                avisosClient.criarAvisoNovaTarefa(
+                                    salvo.getId(), 
+                                    salvo.getProjetoId(), 
+                                    membroId, 
+                                    autorId,
+                                    autorNome
+                                );
+                            }
                         } else {
                             // Aviso para outros membros sobre quem foi adicionado
                             avisosClient.criarAvisoMembroAdicionadoTarefa(

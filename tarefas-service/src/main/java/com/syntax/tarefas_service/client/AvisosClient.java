@@ -172,4 +172,36 @@ public class AvisosClient {
         
         criarAviso(aviso);
     }
+
+    /**
+     * Cria aviso de tarefa que vence hoje
+     */
+    public void criarAvisoTarefaVenceHoje(String tarefaId, String projetoId, String usuarioId) {
+        AvisoDTO aviso = new AvisoDTO();
+        aviso.setTipo("urgente");
+        aviso.setMensagem("Atenção: Esta tarefa vence hoje");
+        aviso.setData(new Date());
+        aviso.setVisualizado(false);
+        aviso.setUsuarioId(usuarioId);
+        aviso.setTarefaId(tarefaId);
+        aviso.setProjetoId(projetoId);
+        
+        criarAviso(aviso);
+    }
+
+    /**
+     * Cria aviso de tarefa que passou do prazo
+     */
+    public void criarAvisoTarefaPassouPrazo(String tarefaId, String projetoId, String usuarioId) {
+        AvisoDTO aviso = new AvisoDTO();
+        aviso.setTipo("urgente");
+        aviso.setMensagem("Lembrete: Esta tarefa passou do prazo");
+        aviso.setData(new Date());
+        aviso.setVisualizado(false);
+        aviso.setUsuarioId(usuarioId);
+        aviso.setTarefaId(tarefaId);
+        aviso.setProjetoId(projetoId);
+        
+        criarAviso(aviso);
+    }
 }
