@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Configuração do RestTemplate para comunicação HTTP entre microserviços
+ * Configuração do RestTemplate (necessário para fazer chamadas HTTP entre
+ * microsserviços)
  */
 @Configuration
 public class RestTemplateConfig {
