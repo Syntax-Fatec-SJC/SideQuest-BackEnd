@@ -13,50 +13,24 @@ public class Anexo {
 
     private String tarefaId;
     private String nome;
-    private String tipo; // image, pdf, video
     private String contentType;
     private Long tamanho;
-    private String tamanhoFormatado;
+    private String gridFsFileId;
     private LocalDateTime dataUpload;
 
-    // Armazena o arquivo em Base64 (para arquivos pequenos/médios)
-    private String arquivoBase64;
-
-    // Construtor vazio
     public Anexo() {
         this.dataUpload = LocalDateTime.now();
     }
 
-    // Construtor completo
-    public Anexo(String tarefaId, String nome, String tipo, String contentType, Long tamanho, String arquivoBase64) {
+    public Anexo(String tarefaId, String nome, String contentType, Long tamanho, String gridFsFileId) {
         this.tarefaId = tarefaId;
         this.nome = nome;
-        this.tipo = tipo;
         this.contentType = contentType;
         this.tamanho = tamanho;
-        this.tamanhoFormatado = formatarTamanho(tamanho);
-        this.arquivoBase64 = arquivoBase64;
+        this.gridFsFileId = gridFsFileId;
         this.dataUpload = LocalDateTime.now();
     }
 
-    // Formatar tamanho do arquivo
-    private String formatarTamanho(Long bytes) {
-        if (bytes == null) {
-            return "0 B";
-        }
-        if (bytes < 1024) {
-            return bytes + " B";
-        }
-        if (bytes < 1024 * 1024) {
-            return String.format("%.1f KB", bytes / 1024.0);
-        }
-        if (bytes < 1024 * 1024 * 1024) {
-            return String.format("%.1f MB", bytes / (1024.0 * 1024));
-        }
-        return String.format("%.1f GB", bytes / (1024.0 * 1024 * 1024));
-    }
-
-    // setters e setters
     public String getId() {
         return id;
     }
@@ -81,14 +55,6 @@ public class Anexo {
         this.nome = nome;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
     public String getContentType() {
         return contentType;
     }
@@ -103,15 +69,14 @@ public class Anexo {
 
     public void setTamanho(Long tamanho) {
         this.tamanho = tamanho;
-        this.tamanhoFormatado = formatarTamanho(tamanho);
     }
 
-    public String getTamanhoFormatado() {
-        return tamanhoFormatado;
+    public String getGridFsFileId() {
+        return gridFsFileId;
     }
 
-    public void setTamanhoFormatado(String tamanhoFormatado) {
-        this.tamanhoFormatado = tamanhoFormatado;
+    public void setGridFsFileId(String gridFsFileId) {
+        this.gridFsFileId = gridFsFileId;
     }
 
     public LocalDateTime getDataUpload() {
@@ -122,11 +87,16 @@ public class Anexo {
         this.dataUpload = dataUpload;
     }
 
-    public String getArquivoBase64() {
-        return arquivoBase64;
-    }
-
-    public void setArquivoBase64(String arquivoBase64) {
-        this.arquivoBase64 = arquivoBase64;
+    @Override
+    public String toString() {
+        return "Anexo{"
+                + "id='" + id + '\''
+                + ", tarefaId='" + tarefaId + '\''
+                + ", nome='" + nome + '\''
+                + ", contentType='" + contentType + '\''
+                + ", tamanho=" + tamanho
+                + ", gridFsFileId='" + gridFsFileId + '\''
+                + ", dataUpload=" + dataUpload
+                + '}';
     }
 }

@@ -1,13 +1,14 @@
 package com.fatec.anexo_service.controller;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,180 +16,201 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fatec.anexo_service.entidade.Anexo;
 import com.fatec.anexo_service.entidade.dto.AnexoDTO;
-import com.fatec.anexo_service.repositorio.AnexoRepository;
 import com.fatec.anexo_service.service.AnexoService;
 
 @RestController
 @RequestMapping("/api/anexos")
 public class AnexoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AnexoController.class);
+
     @Autowired
     private AnexoService anexoService;
 
-    @Autowired
-    private AnexoRepository anexoRepository;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    // =======================================
-    // ENDPOINT DE TESTE
-    // =======================================
-    @PostMapping("/test-save")
-    public ResponseEntity<?> testSave() {
-        try {
-            System.out.println("========== TESTE DE SALVAMENTO ==========");
-
-            Anexo teste = new Anexo();
-            teste.setTarefaId("TEST-" + System.currentTimeMillis());
-            teste.setNome("teste.txt");
-            teste.setTipo("file");
-            teste.setContentType("text/plain");
-            teste.setTamanho(100L);
-            teste.setArquivoBase64("VGVzdGU=");
-            teste.setDataUpload(LocalDateTime.now());
-
-            Anexo salvo = mongoTemplate.save(teste, "anexos");
-
-            System.out.println("✅ SALVO! ID: " + salvo.getId());
-            System.out.println("Total no banco: " + anexoRepository.count());
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "OK");
-            response.put("id", salvo.getId());
-            response.put("totalNoBanco", anexoRepository.count());
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, String> error = new HashMap<>();
-            error.put("erro", e.getMessage());
-            return ResponseEntity.status(500).body(error);
-        }
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<?> listarTodos() {
-        List<Anexo> todos = anexoRepository.findAll();
-        System.out.println("Total no banco: " + todos.size());
-        return ResponseEntity.ok(todos);
-    }
-
-    // ========================================
-    // ENDPOINTS PRINCIPAIS
-    // ========================================
+    /**
+     * Upload de multiplos anexos
+     */
     @PostMapping(value = "/upload/{tarefaId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> upload(@PathVariable String tarefaId, @RequestPart("files") List<MultipartFile> files) {
+    public ResponseEntity<?> upload(
+            @PathVariable String tarefaId,
+            @RequestParam("files") List<MultipartFile> files) {
+
+        logger.info("===========================================");
+        logger.info("Upload de anexos - TarefaId: {}", tarefaId);
+        logger.info("Arquivos: {}", files.size());
+        logger.info("===========================================");
+
         try {
-            System.out.println("========== UPLOAD ==========");
-            System.out.println("TarefaId: " + tarefaId);
-            System.out.println("Arquivos: " + files.size());
-
-            List<Anexo> salvos = anexoService.salvarMultiplos(tarefaId, files);
-
-            System.out.println("✅ Salvos: " + salvos.size());
-            System.out.println("Total no banco: " + anexoRepository.count());
+            // Service retorna List<AnexoDTO>
+            List<AnexoDTO> anexosSalvos = anexoService.salvarMultiplos(tarefaId, files);
 
             Map<String, Object> response = new HashMap<>();
             response.put("sucesso", true);
             response.put("total", files.size());
-            response.put("enviados", salvos.size());
-            response.put("arquivos", salvos.stream().map(AnexoDTO::new).collect(Collectors.toList()));
+            response.put("enviados", anexosSalvos.size());
+            response.put("arquivos", anexosSalvos);
 
-            return ResponseEntity.status(201).body(response);
+            logger.info("Upload concluido: {} arquivos salvos", anexosSalvos.size());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, String> error = new HashMap<>();
-            error.put("erro", e.getMessage());
-            return ResponseEntity.status(500).body(error);
+            logger.error("Erro no upload", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("sucesso", false);
+            errorResponse.put("erro", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
+    /**
+     * Listar anexos de uma tarefa
+     */
     @GetMapping("/{tarefaId}")
-    public ResponseEntity<?> listar(@PathVariable String tarefaId) {
+    public ResponseEntity<List<AnexoDTO>> listar(@PathVariable String tarefaId) {
+        logger.info("Listando anexos da tarefa: {}", tarefaId);
+
         try {
-            System.out.println("========== LISTAR ==========");
-            System.out.println("TarefaId: " + tarefaId);
+            // Service retorna List<AnexoDTO>
+            List<AnexoDTO> anexos = anexoService.listarPorTarefa(tarefaId);
+            return ResponseEntity.ok(anexos);
 
-            List<Anexo> anexos = anexoService.listarPorTarefa(tarefaId);
+        } catch (Exception e) {
+            logger.error("Erro ao listar anexos", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-            System.out.println("Encontrados: " + anexos.size());
+    /**
+     * Download de um anexo (arquivo binario)
+     */
+    @GetMapping("/download/{anexoId}")
+    public ResponseEntity<?> download(@PathVariable String anexoId) {
+        logger.info("Download do anexo: {}", anexoId);
 
-            List<Map<String, Object>> response = anexos.stream().map(a -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", a.getId());
-                map.put("nome", a.getNome());
-                map.put("tipo", a.getTipo());
-                map.put("tamanho", a.getTamanhoFormatado());
-                map.put("contentType", a.getContentType());
-                map.put("dataUpload", a.getDataUpload() != null ? a.getDataUpload().toString() : null);
-                return map;
-            }).collect(Collectors.toList());
+        try {
+            // Buscar metadados
+            Anexo anexo = anexoService.buscarPorId(anexoId)
+                    .orElseThrow(() -> new RuntimeException("Anexo nao encontrado"));
+
+            // Baixar arquivo
+            byte[] arquivoBytes = anexoService.downloadArquivo(anexoId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(anexo.getContentType()));
+            headers.setContentDispositionFormData("attachment", anexo.getNome());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(arquivoBytes);
+
+        } catch (Exception e) {
+            logger.error("Erro no download", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("erro", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * Download com metadados (arquivo em Base64)
+     */
+    @GetMapping("/download-base64/{anexoId}")
+    public ResponseEntity<?> downloadBase64(@PathVariable String anexoId) {
+        logger.info("Download Base64 do anexo: {}", anexoId);
+
+        try {
+            // Service retorna AnexoDTO com arquivo Base64
+            AnexoDTO anexoDTO = anexoService.downloadComMetadados(anexoId);
+            return ResponseEntity.ok(anexoDTO);
+
+        } catch (Exception e) {
+            logger.error("Erro no download Base64", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("erro", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    /**
+     * Deletar um anexo
+     */
+    @DeleteMapping("/{anexoId}")
+    public ResponseEntity<?> deletar(@PathVariable String anexoId) {
+        logger.info("Deletando anexo: {}", anexoId);
+
+        try {
+            anexoService.deletar(anexoId);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("sucesso", true);
+            response.put("mensagem", "Anexo deletado com sucesso");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, String> error = new HashMap<>();
-            error.put("erro", e.getMessage());
-            return ResponseEntity.status(500).body(error);
+            logger.error("Erro ao deletar anexo", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("sucesso", false);
+            errorResponse.put("erro", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
-    @GetMapping("/download/{id}")
-    public ResponseEntity<?> download(@PathVariable String id) {
-        try {
-            Anexo anexo = anexoService.buscarPorId(id).orElseThrow(() -> new RuntimeException("Não encontrado"));
-            return ResponseEntity.ok(new AnexoDTO(anexo));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(404).body(Map.of("erro", e.getMessage()));
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable String id) {
-        try {
-            anexoService.deletar(id);
-            return ResponseEntity.ok(Map.of("mensagem", "Deletado", "id", id));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("erro", e.getMessage()));
-        }
-    }
-
+    /**
+     * Deletar todos os anexos de uma tarefa
+     */
     @DeleteMapping("/tarefa/{tarefaId}")
-    public ResponseEntity<?> deletarTodos(@PathVariable String tarefaId) {
+    public ResponseEntity<?> deletarPorTarefa(@PathVariable String tarefaId) {
+        logger.info("===========================================");
+        logger.info("Deletando todos os anexos da tarefa: {}", tarefaId);
+        logger.info("===========================================");
+
         try {
             anexoService.deletarPorTarefa(tarefaId);
-            return ResponseEntity.ok(Map.of("mensagem", "Todos deletados"));
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("sucesso", true);
+            response.put("mensagem", "Todos os anexos da tarefa foram deletados");
+
+            logger.info("Todos os anexos deletados com sucesso!");
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("erro", e.getMessage()));
+            logger.error("Erro ao deletar anexos da tarefa", e);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("sucesso", false);
+            errorResponse.put("erro", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
+    /**
+     * Health check
+     */
     @GetMapping("/health")
     public ResponseEntity<?> health() {
-        Map<String, Object> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
         response.put("service", "anexo-service");
-
-        try {
-            long total = anexoRepository.count();
-            response.put("mongodb", "CONNECTED");
-            response.put("totalAnexos", total);
-        } catch (Exception e) {
-            response.put("mongodb", "ERROR");
-            response.put("mongodbError", e.getMessage());
-        }
+        response.put("mongodb", "CONNECTED");
 
         return ResponseEntity.ok(response);
     }
