@@ -16,7 +16,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Desabilita CSRF
                 .authorizeHttpRequests(auth -> auth
                 // Permite todas as requisições, pois o filtro de autenticação do Gateway
-                // (GatewayAuthenticationFilter) fará a verificação inicial de segurança.
+                // (GatewayAuthenticationFilter) fará a verificação inicial de segurança
                 .anyRequest().permitAll()
                 );
         return http.build();

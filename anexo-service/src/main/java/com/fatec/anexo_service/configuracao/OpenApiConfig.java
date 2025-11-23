@@ -26,7 +26,7 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI anexosServiceOpenAPI() {
-        // Configuração dos servidores
+        // configuração dos servidores
         Server devServer = new Server();
         devServer.setUrl("http://localhost:" + serverPort);
         devServer.setDescription("Servidor de Desenvolvimento");

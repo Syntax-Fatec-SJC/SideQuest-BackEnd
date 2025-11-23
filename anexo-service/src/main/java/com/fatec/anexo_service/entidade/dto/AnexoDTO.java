@@ -13,7 +13,7 @@ public class AnexoDTO {
     private String contentType;
     private String tamanho;
     private String dataUpload;
-    private String arquivoBase64; // Incluído para download
+    private String arquivoBase64; // incluído para download
 
     public AnexoDTO(Anexo entidade) {
         this.id = entidade.getId();

@@ -56,7 +56,7 @@ public class Anexo {
         return String.format("%.1f GB", bytes / (1024.0 * 1024 * 1024));
     }
 
-    // Getters e Setters
+    // setters e setters
     public String getId() {
         return id;
     }

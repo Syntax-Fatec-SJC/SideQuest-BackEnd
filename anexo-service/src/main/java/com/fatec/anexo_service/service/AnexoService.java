@@ -29,7 +29,6 @@ public class AnexoService {
         // Converter arquivo para Base64
         String arquivoBase64 = Base64.getEncoder().encodeToString(file.getBytes());
 
-        // Criar entidade
         Anexo anexo = new Anexo(
                 tarefaId,
                 file.getOriginalFilename(),

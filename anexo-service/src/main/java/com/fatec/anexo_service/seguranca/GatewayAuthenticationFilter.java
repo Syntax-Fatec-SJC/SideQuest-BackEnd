@@ -35,8 +35,7 @@ public class GatewayAuthenticationFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getRequestURI();
 
-        // ⚠️ TEMPORÁRIO: PERMITE TODAS AS REQUISIÇÕES
-        logger.debug("⚠️ [FILTRO DESABILITADO] Permitindo requisição: {}", path);
+        logger.debug(" [FILTRO DESABILITADO] Permitindo requisição: {}", path);
         chain.doFilter(request, response);
 
         /* 

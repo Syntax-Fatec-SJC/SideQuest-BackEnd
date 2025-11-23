@@ -21,7 +21,7 @@ public class GridFSConfig {
     public GridFSBucket gridFSBucket() {
         // Assume que o nome do banco de dados é "sidequest_anexo"
         MongoDatabase database = mongoClient.getDatabase("sidequest_anexo");
-        // Cria e retorna o GridFSBucket, que lida com o armazenamento de arquivos grandes
+        // Cria e retorna o GridFSBucket, com o armazenamento de arquivos grandes
         return GridFSBuckets.create(database);
     }
 }
