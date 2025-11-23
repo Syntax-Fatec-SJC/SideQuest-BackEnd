@@ -48,6 +48,7 @@ public class DeletarTarefaService {
 
         // 3. Deletar a tarefa
         System.out.println("[DeletarTarefaService] Deletando tarefa: " + id);
+    }
     @Autowired
     private AvisosClient avisosClient;
 
