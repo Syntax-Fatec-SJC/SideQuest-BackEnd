@@ -24,9 +24,11 @@ public class AtualizarProjetoController {
     @PutMapping("/atualizar/projetos/{id}")
     public ResponseEntity<ProjetoDTO> atualizar(
             @PathVariable String id,
-            @Valid @RequestBody ProjetoDTO dto) {
+            @Valid @RequestBody ProjetoDTO dto,
+            @org.springframework.web.bind.annotation.RequestHeader(value = "X-User-Id", required = false) String autorId,
+            @org.springframework.web.bind.annotation.RequestHeader(value = "X-User-Name", required = false) String autorNome) {
         
-        ProjetoDTO resultado = service.executar(id, dto);
+        ProjetoDTO resultado = service.executar(id, dto, autorId, autorNome);
         return ResponseEntity.ok(resultado);
     }
 }

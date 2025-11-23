@@ -29,7 +29,7 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO dto) {
         Usuario usuario = servicoLoginUsuarioService.realizarLogin(dto);
-        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId());
+        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getId(), usuario.getNome());
         
         LoginResponseDTO resposta = ConversorUsuario.converterLogin(usuario, token);
         return ResponseEntity.ok(resposta);

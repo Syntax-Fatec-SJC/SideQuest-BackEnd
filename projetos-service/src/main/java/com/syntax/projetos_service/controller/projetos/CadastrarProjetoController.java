@@ -32,13 +32,14 @@ public class CadastrarProjetoController {
             @Valid @RequestBody ProjetoDTO dto,
             HttpServletRequest request) {
         
-        // Extrai userId do header propagado pelo Gateway (validado no filtro)
+        // Extrai userId e userName do header propagado pelo Gateway (validado no filtro)
         String usuarioId = (String) request.getAttribute("userId");
         String userEmail = (String) request.getAttribute("userEmail");
+        String userName = (String) request.getAttribute("userName");
         
-        logger.info("📝 Cadastrando projeto para usuário: {} ({})", userEmail, usuarioId);
+        logger.info("📝 Cadastrando projeto para usuário: {} ({}) - Nome: {}", userEmail, usuarioId, userName);
         
-        ProjetoDTO resultado = service.executar(dto, usuarioId);
+        ProjetoDTO resultado = service.executar(dto, usuarioId, userName);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
     }
