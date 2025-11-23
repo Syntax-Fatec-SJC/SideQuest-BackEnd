@@ -1,0 +1,128 @@
+# ========================================
+# application.yml - Anexo Service
+# ========================================
+server:
+  port: 8087
+spring:
+  application:
+    name: anexo-service
+  # ========================================
+  # MONGODB - SUBSTITUIR PELOS DADOS REAIS!
+  # ========================================
+  data:
+    mongodb:
+      #  IMPORTANTE: Substitua <username>, <password> e <cluster>
+      uri: mongodb+srv://syntax:fatec123@syntax-bd.vulmuug.mongodb.net/syntaxbd?retryWrites=true&w=majority&appName=syntaxbd # Use a URI do seu application.properties
+      database: syntaxbd # Use o nome do seu banco de dados
+      auto-index-creation: true
+  # ========================================
+  # UPLOAD DE ARQUIVOS
+  # ========================================
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB # Limite por arquivo
+      max-request-size: 500MB # Limite total da requisição
+      file-size-threshold: 2MB # Tamanho a partir do qual o arquivo é gravado em disco
+  codec: # Para evitar erro 500/timeout/413 com uploads grandes
+    max-in-memory-size: 200MB
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Sao_Paulo
+    default-property-inclusion: non_null
+  # ========================================
+  # DESABILITAR JPA/SQL (conforme seu properties)
+  # ========================================
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+# ========================================
+# LOGGING
+# ========================================
+logging:
+  level:
+    root: INFO
+    com.fatec.anexo_service: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.web: DEBUG
+# ========================================
+# ACTUATOR (Health Check)
+# ========================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers,ratelimiters # Incluindo os que você tinha no properties
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mongo:
+      enabled: true
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+# ====================================
+# JWT CONFIGURATION (apenas para referência, não será implementado neste código)
+# ====================================
+jwt:
+  secret: SideQuestSecretKey2024ForJWTAuthenticationAndAuthorizationSystem
+  expiration: 86400000
+# ====================================
+# CORS CONFIGURATION
+# ====================================
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:3000,http://localhost:8080
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+# ====================================
+# RESILIENCE4J - CIRCUIT BREAKER (conforme seu properties)
+# ====================================
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 100
+        limitRefreshPeriod: 1s
+        timeoutDuration: 0s
+  retry:
+    instances:
+      default:
+        maxAttempts: 3
+        waitDuration: 500ms
+# ====================================
+# SWAGGER/OPENAPI (conforme seu properties)
+# ====================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    disable-swagger-default-url: true
+    server-url: http://localhost:8087 # A porta do seu anexo-service
+    persistAuthorization: true
+    display-request-duration: true
+    tryItOutEnabled: true
+    csrf:
+      enabled: false
+  packages-to-scan: com.fatec.anexo_service.controller
